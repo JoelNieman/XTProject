@@ -10,10 +10,11 @@ import UIKit
 
 //private let reuseIdentifier = "ProductCell"
 
-class ProductCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, ProductResponseDelegate {
+class ProductCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, ProductResponseDelegate {
     
     @IBOutlet weak var collectionViewFlowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var productCollectionView: UICollectionView!
+    @IBOutlet weak var searchBar: UISearchBar!
     
     private var productDownloader: ProductDownloader?
     private var products = [Product]()
@@ -31,6 +32,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var numberOfCells:Int!
     private var scrollTriggerDistanceFromBottom:CGFloat = 1
     private var minimumTrigger:CGFloat!
+    private var localStorage:NSUserDefaults!
     
     private var activityIndicator: UIActivityIndicatorView!
     
@@ -45,6 +47,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        
+        
         screenWidth = UIScreen.mainScreen().bounds.width
         screenHeight = UIScreen.mainScreen().bounds.height
         
@@ -54,6 +59,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         numberOfCells = deviceDeterminer.determineNumberOfCells(screenHeight)
         
         fetchProducts(numberOfCells, countOfCollection: products.count)
+        
+        self.searchBar.delegate = self
         
         print("ViewWillAppear: The number of cells to download is: \(numberOfCells)")
         
@@ -72,15 +79,28 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     // MARK: - API Call Protocol Methods
     
-    func onResponse(products: [Product]) {
-        self.products += products
+    func onResponse(retrievedProducts: [Product]) {
+        
+        self.products += retrievedProducts
+//        
+        let dataToSave:Dictionary = ["cachedAllProducts": self.products]
+        
+//        let d = NSKeyedArchiver.archivedDataWithRootObject(dataToSave)
+//        localStorage.setValue(dataToSave, forKey: "cachedAllProducts")
+        
+        
+//        localStorage = NSUserDefaults.standardUserDefaults()
+//        localStorage.setObject(dataToSave, forKey: "cachedAllProducts")
+//        localStorage.setObject(dataToSave, forKey: "cachedAllProducts")
+//        localStorage.synchronize()
+        
         productCount = self.products.count
-
+//        print("There are \(localStorage.objectForKey("cachedAllProducts")!.count) cached products")
+        
         self.productCollectionView.reloadData()
         activityIndicator.stopAnimating()
         
         minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
-        
         productCollectionView.scrollEnabled = true
         
         print("The product count is \(productCount)")
@@ -112,16 +132,16 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         
-        
-        
-        if scrollView.contentSize.height > minimumTrigger {
-            let distanceFromBottom = scrollView.contentSize.height - (scrollView.bounds.size.height - scrollView.contentInset.bottom) - scrollView.contentOffset.y
-            
-            if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
-                scrollView.scrollEnabled = false
-                fetchProducts(21, countOfCollection: productCount)
-                print("Fetching 21")
-                print("Skipping \(products.count)")
+        if products.last?.lastItem != true {
+            if scrollView.contentSize.height > minimumTrigger {
+                let distanceFromBottom = scrollView.contentSize.height - (scrollView.bounds.size.height - scrollView.contentInset.bottom) - scrollView.contentOffset.y
+                
+                if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
+                    scrollView.scrollEnabled = false
+                    fetchProducts(21, countOfCollection: productCount)
+                    print("Fetching 21")
+                    print("Skipping \(products.count)")
+                }
             }
         }
     }
@@ -151,6 +171,25 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         activityIndicator.hidesWhenStopped = true
         activityIndicator.startAnimating()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: activityIndicator)
+    }
+    
+    // MARK - Search functionality
+    
+    internal func searchBarShouldBeginEditing(searchBar: UISearchBar) -> Bool {
+        self.searchBar.showsCancelButton = true
+        
+        return true
+    }
+    
+    internal func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+//        self.searchBar.endEditing(true)
+        self.searchBar.showsCancelButton = false
+        self.searchBar.resignFirstResponder()
+    }
+    
+    internal func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        self.searchBar.showsCancelButton = false
+        self.searchBar.resignFirstResponder()
     }
     
 }

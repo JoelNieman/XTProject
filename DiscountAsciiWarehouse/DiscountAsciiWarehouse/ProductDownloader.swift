@@ -10,7 +10,7 @@ import Foundation
 
 class ProductDownloader {
     
-    var products = [Product]();
+    var products:Array = [Product]();
     var dnJson = NSData()
     var httpResponse: NSHTTPURLResponse?
     private let lastProduct = Product(face: ":(", lastItem: true)
@@ -23,12 +23,12 @@ class ProductDownloader {
     
     func downloadProducts(limit: Int, skip: Int) {
         
-        var myArrayOfProducts = [Product]()
+        var myArrayOfProducts:Array = [Product]()
         let url = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)")
 //        let url = NSURL(string: "http://74.50.59.155:5000/api/search?limit=1&skip=0")
         let session = NSURLSession.sharedSession()
         let task = session.downloadTaskWithURL(url!, completionHandler: {
-            data, response, error in
+            location, response, error in
             if let taskError = error {
                 print("Task Error Domain is: \(taskError.domain)\n\nThe Error Code is: \(taskError.code)")
             } else {
@@ -39,7 +39,7 @@ class ProductDownloader {
 //                    print("The retrieved data is: \n\n \(data!)")
                     
                     do {
-                        let jsonString:NSString = try NSString(contentsOfURL: data!, encoding: NSUTF8StringEncoding)
+                        let jsonString:NSString = try NSString(contentsOfURL: location!, encoding: NSUTF8StringEncoding)
                         let myArray:[NSString] = jsonString.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
                         
                         if jsonString == "" {

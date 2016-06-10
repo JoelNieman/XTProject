@@ -40,13 +40,18 @@
                         <subviews>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="xY2-MQ-Vq5">
                                 <rect key="frame" x="-60" y="-14" width="121" height="29"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="fcc-TS-1er"/>
+                                    <constraint firstAttribute="height" constant="40" id="fcc-TS-1er">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="45"/>
+                                    </constraint>
                                 </constraints>
                                 <segments>
                                     <segment title="All Products"/>
                                     <segment title="Available Products"/>
+                                    <segment title="Search"/>
                                 </segments>
+                                <color key="tintColor" red="0.50196081400000003" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="fcc-TS-1er"/>
@@ -61,6 +66,13 @@
                                     <action selector="segmentedControlPressed:" destination="BYZ-38-t0r" eventType="valueChanged" id="dM4-e4-WNI"/>
                                 </connections>
                             </segmentedControl>
+                            <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="ufn-EI-fxM">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="0.0"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="caL-GE-Lap">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                 <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
@@ -81,7 +93,7 @@
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TEST" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="none" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="IOf-Kr-2jQ">
                                                     <rect key="frame" x="-42" y="-21" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="textColor" red="0.50196081400000003" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                     <variation key="heightClass=regular-widthClass=compact" ambiguous="YES" misplaced="YES">
                                                         <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
@@ -125,16 +137,23 @@
                                 </connections>
                             </collectionView>
                         </subviews>
-                        <color key="backgroundColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="caL-GE-Lap" secondAttribute="bottom" id="C1a-Ht-lKX"/>
-                            <constraint firstItem="xY2-MQ-Vq5" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Fgc-18-jDg"/>
-                            <constraint firstItem="xY2-MQ-Vq5" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Qes-hj-Wzk"/>
-                            <constraint firstAttribute="trailing" secondItem="xY2-MQ-Vq5" secondAttribute="trailing" id="dCw-do-Wiq"/>
-                            <constraint firstItem="caL-GE-Lap" firstAttribute="top" secondItem="xY2-MQ-Vq5" secondAttribute="bottom" id="lid-Hs-gDJ"/>
+                            <constraint firstAttribute="trailing" secondItem="ufn-EI-fxM" secondAttribute="trailing" id="7Bl-Vg-mtC"/>
+                            <constraint firstAttribute="trailing" secondItem="xY2-MQ-Vq5" secondAttribute="trailing" id="7UK-as-gR9">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-4"/>
+                            </constraint>
+                            <constraint firstItem="xY2-MQ-Vq5" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="WaU-SH-aLF">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-4"/>
+                            </constraint>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="xY2-MQ-Vq5" secondAttribute="bottom" id="eT8-tE-nuK"/>
+                            <constraint firstItem="xY2-MQ-Vq5" firstAttribute="top" secondItem="caL-GE-Lap" secondAttribute="bottom" priority="750" id="j50-3p-Sjv"/>
+                            <constraint firstItem="caL-GE-Lap" firstAttribute="top" secondItem="ufn-EI-fxM" secondAttribute="bottom" id="l5I-Du-kTJ"/>
                             <constraint firstAttribute="trailing" secondItem="caL-GE-Lap" secondAttribute="trailing" id="neZ-3x-Izd">
                                 <variation key="heightClass=regular-widthClass=compact" constant="8"/>
                             </constraint>
+                            <constraint firstItem="ufn-EI-fxM" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="oah-dn-nCn"/>
+                            <constraint firstItem="ufn-EI-fxM" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="teT-2i-VHg"/>
                             <constraint firstItem="caL-GE-Lap" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="zYp-Cg-axE">
                                 <variation key="heightClass=regular-widthClass=compact" constant="8"/>
                             </constraint>
@@ -142,14 +161,18 @@
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="xY2-MQ-Vq5"/>
+                                <exclude reference="ufn-EI-fxM"/>
                                 <exclude reference="caL-GE-Lap"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="C1a-Ht-lKX"/>
-                                <exclude reference="Fgc-18-jDg"/>
-                                <exclude reference="Qes-hj-Wzk"/>
-                                <exclude reference="dCw-do-Wiq"/>
-                                <exclude reference="lid-Hs-gDJ"/>
+                                <exclude reference="eT8-tE-nuK"/>
+                                <exclude reference="7Bl-Vg-mtC"/>
+                                <exclude reference="oah-dn-nCn"/>
+                                <exclude reference="teT-2i-VHg"/>
+                                <exclude reference="7UK-as-gR9"/>
+                                <exclude reference="WaU-SH-aLF"/>
+                                <exclude reference="j50-3p-Sjv"/>
+                                <exclude reference="l5I-Du-kTJ"/>
                                 <exclude reference="neZ-3x-Izd"/>
                                 <exclude reference="zYp-Cg-axE"/>
                             </mask>
@@ -157,14 +180,18 @@
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="subviews">
                                 <include reference="xY2-MQ-Vq5"/>
+                                <include reference="ufn-EI-fxM"/>
                                 <include reference="caL-GE-Lap"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="C1a-Ht-lKX"/>
-                                <include reference="Fgc-18-jDg"/>
-                                <include reference="Qes-hj-Wzk"/>
-                                <include reference="dCw-do-Wiq"/>
-                                <include reference="lid-Hs-gDJ"/>
+                                <include reference="eT8-tE-nuK"/>
+                                <include reference="7Bl-Vg-mtC"/>
+                                <include reference="oah-dn-nCn"/>
+                                <include reference="teT-2i-VHg"/>
+                                <include reference="7UK-as-gR9"/>
+                                <include reference="WaU-SH-aLF"/>
+                                <include reference="j50-3p-Sjv"/>
+                                <include reference="l5I-Du-kTJ"/>
                                 <include reference="neZ-3x-Izd"/>
                                 <include reference="zYp-Cg-axE"/>
                             </mask>
@@ -174,6 +201,7 @@
                     <connections>
                         <outlet property="collectionViewFlowLayout" destination="YGb-2Y-ij6" id="h1h-Fq-7ET"/>
                         <outlet property="productCollectionView" destination="caL-GE-Lap" id="o1w-Nf-BnA"/>
+                        <outlet property="searchBar" destination="ufn-EI-fxM" id="qke-W5-JRt"/>
                         <outlet property="segmentControl" destination="xY2-MQ-Vq5" id="uT1-jo-FWZ"/>
                     </connections>
                 </viewController>
@@ -193,7 +221,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
-                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.80000001190000003" green="0.40000000600000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
