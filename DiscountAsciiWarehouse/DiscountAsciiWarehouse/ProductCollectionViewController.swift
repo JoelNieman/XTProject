@@ -15,8 +15,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBOutlet weak var collectionViewFlowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var productCollectionView: UICollectionView!
     
-    var productDownloader: ProductDownloader?
-    var products = [Product]()
+    private var productDownloader: ProductDownloader?
+    private var products = [Product]()
     
     private let leftAndRightPaddings:CGFloat = 24.0
     private let numberOfItemsInRow:CGFloat = 3.0
@@ -28,6 +28,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var device:NSString!
     private let deviceDeterminer = DeviceDeterminer()
     private var numberOfCells:Int!
+    private var activityIndicator: UIActivityIndicatorView!
     
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
@@ -52,17 +53,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         print("ViewWillAppear: The number of cells to download is: \(numberOfCells)")
         
-        self.navigationItem.title = "Discount Ascii Warehouse"
-        
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(false)
-        
-        
-        //        let numberOfCells = Int((screenHeight/cellHeight) + cellHeight)/3
-        
-        
     }
     
     override func didReceiveMemoryWarning() {
@@ -76,24 +70,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     func onResponse(products: [Product]) {
         self.products += products
-        //        print("There are \(self.products.count) products")
-        
-        //        if (self.products.count < 4) {
-        //            productDownloader?.downloadProducts(1, skip: self.products.count)
-        //        }
-        
-        // var index = self.products.count-1
-        productCollectionView.reloadInputViews()
-        //        productCollectionView.reloadSections(NSIndexSet(index: 1))
-        
-        
+
         self.productCollectionView.reloadData()
-        
-        
-        //        self.productCollectionView.reloadData()
+        activityIndicator.stopAnimating()
         
         print(products.count)
-        
     }
     
     
@@ -121,6 +102,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     }
     
     func fetchProducts(numberOfProducts: Int, countOfCollection: Int) {
+        startActivityIndicator()
         productDownloader = ProductDownloader(handler: self)
         productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection)
     }
@@ -133,6 +115,13 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     @IBAction func segmentedControlPressed(sender: AnyObject) {
         productCollectionView.reloadData()
+    }
+    
+    func startActivityIndicator() {
+        activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .White)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.startAnimating()
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: activityIndicator)
     }
     
 }

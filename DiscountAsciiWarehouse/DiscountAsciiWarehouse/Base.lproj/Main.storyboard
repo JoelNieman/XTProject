@@ -26,7 +26,7 @@
             </objects>
             <point key="canvasLocation" x="-526.5" y="179.25"/>
         </scene>
-        <!--Product Collection View Controller-->
+        <!--Discount Ascii Warehouse-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ProductCollectionViewController" customModule="DiscountAsciiWarehouse" customModuleProvider="target" sceneMemberID="viewController">
@@ -170,7 +170,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" id="CPV-8Y-Ol0"/>
+                    <navigationItem key="navigationItem" title="Discount Ascii Warehouse" id="ssE-uV-gRr"/>
                     <connections>
                         <outlet property="collectionViewFlowLayout" destination="YGb-2Y-ij6" id="h1h-Fq-7ET"/>
                         <outlet property="productCollectionView" destination="caL-GE-Lap" id="o1w-Nf-BnA"/>
