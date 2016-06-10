@@ -21,22 +21,47 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private let leftAndRightPaddings:CGFloat = 24.0
     private let numberOfItemsInRow:CGFloat = 3.0
     private let heightAdjustment:CGFloat = 30.0
+    private var screenWidth:CGFloat!
+    private var screenHeight:CGFloat!
+    private var cellWidth:CGFloat!
+    private var cellHeight:CGFloat!
+    private var device:NSString!
+    private let deviceDeterminer = DeviceDeterminer()
+    private var numberOfCells:Int!
+    
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
-
-
+    
+    
+    
     
     // MARK: - VC life cycle methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationController?
-        self.navigationItem.title = "Discount Ascii Warehouse"
-//        self.navigationController?
+        screenWidth = UIScreen.mainScreen().bounds.width
+        screenHeight = UIScreen.mainScreen().bounds.height
         
-        productDownloader = ProductDownloader(handler: self)
-        productDownloader?.downloadProducts(30, skip: products.count)
+        cellWidth = ((screenWidth - 16) - leftAndRightPaddings) / numberOfItemsInRow
+        cellHeight = (screenWidth + 30)
+        
+        numberOfCells = deviceDeterminer.determineNumberOfCells(screenHeight)
+        
+        fetchProducts(numberOfCells, countOfCollection: products.count)
+        
+        print("ViewWillAppear: The number of cells to download is: \(numberOfCells)")
+        
+        self.navigationItem.title = "Discount Ascii Warehouse"
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(false)
+        
+        
+        //        let numberOfCells = Int((screenHeight/cellHeight) + cellHeight)/3
+        
         
     }
     
@@ -45,23 +70,27 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         // Dispose of any resources that can be recreated.
     }
     
+    
+    
+    // MARK: - API Call Protocol Methods
+    
     func onResponse(products: [Product]) {
         self.products += products
         //        print("There are \(self.products.count) products")
         
-//        if (self.products.count < 4) {
-//            productDownloader?.downloadProducts(1, skip: self.products.count)
-//        }
+        //        if (self.products.count < 4) {
+        //            productDownloader?.downloadProducts(1, skip: self.products.count)
+        //        }
         
         // var index = self.products.count-1
         productCollectionView.reloadInputViews()
-//        productCollectionView.reloadSections(NSIndexSet(index: 1))
+        //        productCollectionView.reloadSections(NSIndexSet(index: 1))
         
-
+        
         self.productCollectionView.reloadData()
         
-
-//        self.productCollectionView.reloadData()
+        
+        //        self.productCollectionView.reloadData()
         
         print(products.count)
         
@@ -83,30 +112,27 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ProductCell", forIndexPath: indexPath) as! CustomCell
         
-//        cell.contentView.frame = cell.bounds
-//        cell.contentView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-    
-        
         cell.face.text = self.products[indexPath.row].face
-
-
+        
+        
         formatCellDimensions()
         
         return cell
     }
     
+    func fetchProducts(numberOfProducts: Int, countOfCollection: Int) {
+        productDownloader = ProductDownloader(handler: self)
+        productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection)
+    }
+    
     func formatCellDimensions(){
-        let screenWidth = UIScreen.mainScreen().bounds.width
-        let cellWidth = ((screenWidth - 16) - leftAndRightPaddings) / numberOfItemsInRow
         let layout = productCollectionView.collectionViewLayout as! UICollectionViewFlowLayout
         layout.itemSize = CGSizeMake(cellWidth, cellWidth + heightAdjustment)
-
-        
-        print("\(cellWidth)")
-        print("The cell height is \(cellWidth) + 30")
     }
-
+    
+    
     @IBAction func segmentedControlPressed(sender: AnyObject) {
         productCollectionView.reloadData()
     }
+    
 }
