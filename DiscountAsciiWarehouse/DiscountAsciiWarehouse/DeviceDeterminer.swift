@@ -16,13 +16,13 @@ public class DeviceDeterminer {
         
         if (screenHeight > 700) {
             print("This is a 6 Plus")
-            returnValue = 15
+            returnValue = 18
         } else if (screenHeight > 650) {
             print("This is a 6")
-            returnValue = 12
+            returnValue = 15
         } else if (screenHeight > 550) {
             print("this is a 5")
-            returnValue = 12
+            returnValue = 15
         } else if (screenHeight > 450) {
             print("this is a 4")
             returnValue = 9

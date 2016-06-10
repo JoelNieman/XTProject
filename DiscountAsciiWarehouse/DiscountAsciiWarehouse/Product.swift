@@ -16,6 +16,15 @@ class Product {
     var face: String!
     var stock: Int!
     var tags: [String]!
-    var joel: String!
-
+    var lastItem: Bool!
+    
+    init() {
+        
+    }
+    
+    init(face: String, lastItem: Bool) {
+        self.face = face
+        self.lastItem = lastItem
+    }
+    
 }

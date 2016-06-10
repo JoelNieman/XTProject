@@ -17,6 +17,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     private var productDownloader: ProductDownloader?
     private var products = [Product]()
+    private var productCount:Int!
     
     private let leftAndRightPaddings:CGFloat = 24.0
     private let numberOfItemsInRow:CGFloat = 3.0
@@ -28,6 +29,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var device:NSString!
     private let deviceDeterminer = DeviceDeterminer()
     private var numberOfCells:Int!
+    private var scrollTriggerDistanceFromBottom:CGFloat = 1
+    private var minimumTrigger:CGFloat!
+    
     private var activityIndicator: UIActivityIndicatorView!
     
     
@@ -70,13 +74,19 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     func onResponse(products: [Product]) {
         self.products += products
+        productCount = self.products.count
 
         self.productCollectionView.reloadData()
         activityIndicator.stopAnimating()
         
-        print(products.count)
+        minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
+        
+        productCollectionView.scrollEnabled = true
+        
+        print("The product count is \(productCount)")
     }
     
+    // MARK: - UICollectionViewMethods
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return 1
@@ -95,16 +105,35 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         cell.face.text = self.products[indexPath.row].face
         
-        
         formatCellDimensions()
         
         return cell
     }
     
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        
+        
+        
+        if scrollView.contentSize.height > minimumTrigger {
+            let distanceFromBottom = scrollView.contentSize.height - (scrollView.bounds.size.height - scrollView.contentInset.bottom) - scrollView.contentOffset.y
+            
+            if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
+                scrollView.scrollEnabled = false
+                fetchProducts(21, countOfCollection: productCount)
+                print("Fetching 21")
+                print("Skipping \(products.count)")
+            }
+        }
+    }
+    
+    
+    // MARK: - XXX
+    
+    
     func fetchProducts(numberOfProducts: Int, countOfCollection: Int) {
-        startActivityIndicator()
-        productDownloader = ProductDownloader(handler: self)
-        productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection)
+            startActivityIndicator()
+            productDownloader = ProductDownloader(handler: self)
+            productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection)
     }
     
     func formatCellDimensions(){

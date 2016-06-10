@@ -13,6 +13,7 @@ class ProductDownloader {
     var products = [Product]();
     var dnJson = NSData()
     var httpResponse: NSHTTPURLResponse?
+    private let lastProduct = Product(face: ":(", lastItem: true)
     
     let handler: ProductResponseDelegate
     init(handler: ProductResponseDelegate) {
@@ -41,8 +42,17 @@ class ProductDownloader {
                         let jsonString:NSString = try NSString(contentsOfURL: data!, encoding: NSUTF8StringEncoding)
                         let myArray:[NSString] = jsonString.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
                         
-                        self.parseJSON(myArray)
-
+                        if jsonString == "" {
+                            dispatch_async(dispatch_get_main_queue()) {
+                                print("jsonString is empty")
+                                var lastProductCollection = [Product]()
+                                lastProductCollection.append(self.lastProduct)
+                                self.handler.onResponse(lastProductCollection)
+                            }
+                        } else {
+                            self.parseJSON(myArray)
+                        }
+                        
                         
                     } catch {
                         print("error converting url to NSString")
@@ -106,19 +116,20 @@ class ProductDownloader {
                             product.tags = (serializedJSON?.objectForKey("tags")! as! [String])
                         } else { print("there are no values for key: tags") }
                     
+                        product.lastItem = false
 
-                        print("The type is : \(product.type)")
-                        print("The id is   : \(product.id)")
-                        print("The size is : \(product.size)")
-                        print("The price is: \(product.price)")
-                        print("\(product.face)")
-                        print("The stock is: \(product.stock)")
-                        print("The tags are: \(product.tags)")
+//                        print("The type is : \(product.type)")
+//                        print("The id is   : \(product.id)")
+//                        print("The size is : \(product.size)")
+//                        print("The price is: \(product.price)")
+//                        print("\(product.face)")
+//                        print("The stock is: \(product.stock)")
+//                        print("The tags are: \(product.tags)")
                     
                         productArray.append(product)
                     
                 } catch {
-                    print("Error serializing JSON")
+//                    print("Error serializing JSON")
                 }
 
             }else {
@@ -131,3 +142,4 @@ class ProductDownloader {
         }
     }
 }
+
