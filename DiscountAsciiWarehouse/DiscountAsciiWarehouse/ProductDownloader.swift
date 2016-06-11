@@ -36,7 +36,7 @@ class ProductDownloader {
                 switch self.httpResponse!.statusCode {
                 case 200:
 //                    print("Got 200")
-//                    print("The retrieved data is: \n\n \(data!)")
+//                    print("The retrieved data is: \n\n \(location!)")
                     
                     do {
                         let jsonString:NSString = try NSString(contentsOfURL: location!, encoding: NSUTF8StringEncoding)
@@ -108,7 +108,7 @@ class ProductDownloader {
                     
                     
                         if (serializedJSON!.objectForKey("stock") != nil) {
-                            product.stock = serializedJSON!.objectForKey("stock")!.integerValue
+                            product.stock = (serializedJSON!.objectForKey("stock")!.integerValue)
                         } else { print("there is no value for key: stock") }
                     
                     

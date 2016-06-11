@@ -18,6 +18,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     private var productDownloader: ProductDownloader?
     private var products = [Product]()
+    private let product = Product()
+    private var loadedProducts:[Product]?
     private var productCount:Int!
     
     private let leftAndRightPaddings:CGFloat = 24.0
@@ -33,6 +35,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var scrollTriggerDistanceFromBottom:CGFloat = 1
     private var minimumTrigger:CGFloat!
     private var localStorage:NSUserDefaults!
+    private var savedProducts = [Product]()
     
     private var activityIndicator: UIActivityIndicatorView!
     
@@ -58,7 +61,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         numberOfCells = deviceDeterminer.determineNumberOfCells(screenHeight)
         
-        fetchProducts(numberOfCells, countOfCollection: products.count)
+        productDownloader = ProductDownloader(handler: self)
+        loadProducts()
         
         self.searchBar.delegate = self
         
@@ -69,6 +73,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(false)
     }
+    
+    override func viewWillDisappear(animated: Bool) {
+        saveProducts()
+    }
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -84,15 +93,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         self.products += retrievedProducts
 //        
         let dataToSave:Dictionary = ["cachedAllProducts": self.products]
-        
-//        let d = NSKeyedArchiver.archivedDataWithRootObject(dataToSave)
-//        localStorage.setValue(dataToSave, forKey: "cachedAllProducts")
-        
-        
-//        localStorage = NSUserDefaults.standardUserDefaults()
-//        localStorage.setObject(dataToSave, forKey: "cachedAllProducts")
-//        localStorage.setObject(dataToSave, forKey: "cachedAllProducts")
-//        localStorage.synchronize()
         
         productCount = self.products.count
 //        print("There are \(localStorage.objectForKey("cachedAllProducts")!.count) cached products")
@@ -138,7 +138,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 
                 if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
                     scrollView.scrollEnabled = false
-                    fetchProducts(21, countOfCollection: productCount)
+                    fetchProducts(21, countOfCollection: self.products.count)
                     print("Fetching 21")
                     print("Skipping \(products.count)")
                 }
@@ -152,7 +152,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     func fetchProducts(numberOfProducts: Int, countOfCollection: Int) {
             startActivityIndicator()
-            productDownloader = ProductDownloader(handler: self)
             productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection)
     }
     
@@ -163,7 +162,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     
     @IBAction func segmentedControlPressed(sender: AnyObject) {
-        productCollectionView.reloadData()
+//        productCollectionView.reloadData()
     }
     
     func startActivityIndicator() {
@@ -173,7 +172,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: activityIndicator)
     }
     
-    // MARK - Search functionality
+    // MARK: - Search functionality
     
     internal func searchBarShouldBeginEditing(searchBar: UISearchBar) -> Bool {
         self.searchBar.showsCancelButton = true
@@ -192,4 +191,30 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         self.searchBar.resignFirstResponder()
     }
     
+    // MARK: - NSCoding
+    
+    func saveProducts() {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.products, toFile: Product.ArchiveURL.path!)
+        
+        if !isSuccessfulSave {
+            print("Failed to save products")
+        } else {
+            print("Products saved successfully")
+        }
+        
+    }
+    
+    func loadProducts() {
+//        var savedProducts:[Product]?
+        if let savedProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.ArchiveURL.path!) as? [Product]){
+                self.products = savedProducts
+                print("Loading saved products!")
+//                print("\(self.products[0].face)")
+
+            
+            } else {
+                fetchProducts(numberOfCells, countOfCollection: products.count)
+                print("Fetching new products")
+        }
+    }
 }

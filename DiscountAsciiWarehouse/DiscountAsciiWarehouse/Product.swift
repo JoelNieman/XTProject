@@ -22,8 +22,9 @@ struct PropertyKey {
     
 }
 
+// MARK: - Product Class
 
-class Product {
+class Product: NSObject, NSCoding {
     var type: String!
     var id: String!
     var size: Int!
@@ -33,44 +34,65 @@ class Product {
     var tags: [String]!
     var lastItem: Bool!
     
-    init() {
-        
+    override init() {
+        super.init()
     }
+    
     
     init(face: String, lastItem: Bool) {
         self.face = face
         self.lastItem = lastItem
+        
+        super.init()
     }
     
-//    required convenience init?(coder decoder: NSCoder) {
-//        guard let type = decoder.decodeObjectForKey("type") as? String,
-//            let id = decoder.decodeObjectForKey("id") as? String,
-//            let size = decoder.decodeIntForKey("size") as? Int32,
-//            let price = decoder.decodeDoubleForKey("price") as? Double,
-//            let face = decoder.decodeObjectForKey("face") as? String,
-//            let stock = decoder.decodeIntForKey("stock") as? Int32,
-//            let tags = decoder.decodeObjectForKey("tags") as? [String],
-//            let lastItem = (decoder.decodeBoolForKey("lastItem") as? Bool)
-//            else { return nil }
-//        
-//        self.init(type: type, id: id, size: size, price: price, face: face, stock: stock, tags: tags, lastItem: lastItem) {
-//            self.type = type
-//            self.id = id
-//            self.size = size
-//            self.price = price
-//            self.face = face
-//            self.stock = stock
-//            self.tags = tags
-//            self.lastItem = lastItem
-//        }
-//    }
-//    
-//    func encodeWithCoder(coder: NSCoder) {
-//        coder.encodeObject(self.title, forKey: "title")
-//        coder.encodeObject(self.author, forKey: "author")
-//        coder.encodeInt(Int32(self.pageCount), forKey: "pageCount")
-//        coder.encodeObject(self.categories, forKey: "categories")
-//        coder.encodeBool(self.available, forKey: "available")
-//    }
+    init?(type: String, id: String, size: Int, price: Double, face: String, stock: Int, tags: [String], lastItem: Bool) {
+        self.type = type
+        self.id = id
+        self.size = size
+        self.price = price
+        self.face = face
+        self.stock = stock
+        self.tags = tags
+        self.lastItem = lastItem
+        
+        super.init()
+        
+        if (face.isEmpty) {
+            return nil
+        }
+    }
     
+    
+    
+    // MARK: - NSCoding
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(type, forKey: PropertyKey.typeKey)
+        aCoder.encodeObject(id, forKey: PropertyKey.idKey)
+        aCoder.encodeInteger(size, forKey: PropertyKey.sizeKey)
+        aCoder.encodeDouble(price, forKey: PropertyKey.priceKey)
+        aCoder.encodeObject(face, forKey: PropertyKey.faceKey)
+        aCoder.encodeInteger(stock, forKey: PropertyKey.stockKey)
+        aCoder.encodeObject(tags, forKey: PropertyKey.tagsKey)
+        aCoder.encodeBool(lastItem, forKey: PropertyKey.lastItemKey)
+    }
+    
+    
+    required convenience init?(coder decoder: NSCoder) {
+        let type = decoder.decodeObjectForKey(PropertyKey.typeKey) as? String
+        let id = decoder.decodeObjectForKey(PropertyKey.idKey) as? String
+        let size = decoder.decodeIntegerForKey(PropertyKey.sizeKey) as? Int
+        let price = decoder.decodeDoubleForKey(PropertyKey.priceKey) as? Double
+        let face = decoder.decodeObjectForKey(PropertyKey.faceKey) as? String
+        let stock = decoder.decodeIntegerForKey(PropertyKey.stockKey) as? Int
+        let tags = decoder.decodeObjectForKey(PropertyKey.tagsKey) as? [String]
+        let lastItem = decoder.decodeBoolForKey(PropertyKey.lastItemKey) as? Bool
+
+        
+        self.init(type: type!, id: id!, size: size!, price: price!, face: face!, stock: stock!, tags: tags!, lastItem: lastItem!)
+    }
+    
+    static let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+    static var ArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("Products")
 }
