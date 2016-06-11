@@ -47,7 +47,7 @@ class ProductDownloader {
                                 print("jsonString is empty")
                                 var lastProductCollection = [Product]()
                                 lastProductCollection.append(self.lastProduct)
-                                self.handler.onResponse(lastProductCollection)
+                                self.handler.onResponse!(lastProductCollection)
                             }
                         } else {
                             self.parseJSON(myArray)
@@ -138,7 +138,7 @@ class ProductDownloader {
         }
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.handler.onResponse(productArray)
+            self.handler.onResponse!(productArray)
         }
     }
 }
