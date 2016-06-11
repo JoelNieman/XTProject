@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5D180ECA1D0A4DB600F0A9E8 /* DeviceDeterminer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D180EC91D0A4DB600F0A9E8 /* DeviceDeterminer.swift */; };
+		5D180ECC1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D180ECB1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift */; };
 		F92478C31D09DFEE00C137D8 /* ProductCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92478C21D09DFEE00C137D8 /* ProductCollectionViewController.swift */; };
 		F92478C91D09E74300C137D8 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92478C81D09E74300C137D8 /* CustomCell.swift */; };
 		F9A68F0B1D0B29D700ACC3E7 /* ColorPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A68F0A1D0B29D700ACC3E7 /* ColorPallet.swift */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		5D180EC91D0A4DB600F0A9E8 /* DeviceDeterminer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceDeterminer.swift; sourceTree = "<group>"; };
+		5D180ECB1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductLoaderSaver.swift; sourceTree = "<group>"; };
 		F92478C21D09DFEE00C137D8 /* ProductCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductCollectionViewController.swift; sourceTree = "<group>"; };
 		F92478C81D09E74300C137D8 /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		F9A68F0A1D0B29D700ACC3E7 /* ColorPallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPallet.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 				F92478C21D09DFEE00C137D8 /* ProductCollectionViewController.swift */,
 				F92478C81D09E74300C137D8 /* CustomCell.swift */,
 				F9A68F0A1D0B29D700ACC3E7 /* ColorPallet.swift */,
+				5D180ECB1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift */,
 			);
 			path = DiscountAsciiWarehouse;
 			sourceTree = "<group>";
@@ -276,6 +279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D180ECA1D0A4DB600F0A9E8 /* DeviceDeterminer.swift in Sources */,
+				5D180ECC1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift in Sources */,
 				F9A68F0B1D0B29D700ACC3E7 /* ColorPallet.swift in Sources */,
 				F9FCED771D08A6E2003BCE81 /* ProductResponseDelegate.swift in Sources */,
 				F9FCED751D085755003BCE81 /* Product.swift in Sources */,

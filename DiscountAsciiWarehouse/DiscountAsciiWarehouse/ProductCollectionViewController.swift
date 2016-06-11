@@ -38,6 +38,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var savedProducts = [Product]()
     private var timeSinceLastDownload: CFAbsoluteTime!
     private var date:CFAbsoluteTime!
+    private let productLoaderSaver = ProductLoaderSaver()
     
     private var activityIndicator: UIActivityIndicatorView!
     
@@ -60,32 +61,29 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         numberOfCells = deviceDeterminer.determineNumberOfCells(screenHeight)
         
+        productDownloader = ProductDownloader(handler: self)
+        
         timeSinceLastDownload = readAndSetTime()
         
-        
-        productDownloader = ProductDownloader(handler: self)
-        loadProducts()
+        if self.timeSinceLastDownload >= 60.0 {
+            self.products = []
+            fetchProducts(numberOfCells, countOfCollection: products.count)
+            print("It about time for some new products!")
+        } else {
+            self.products = productLoaderSaver.loadProducts()
+            if self.products == [] {
+                fetchProducts(numberOfCells, countOfCollection: products.count)
+                print("No saved products. Fetching some for you")
+            }
+        }
         
         self.searchBar.delegate = self
         
-        print("ViewWillAppear: The number of cells to load is: \(numberOfCells)")
+        print("ViewWillAppear: loaded \(self.products.count) cells")
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(false)
-        
-        let notificationCenter = NSNotificationCenter()
-        notificationCenter.addObserver(self, selector: #selector(appTerminated), name: UIApplicationWillTerminateNotification, object: nil)
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        print("viewWillDissapear called!")
-        saveProducts()
-    }
-    
-    func appTerminated() {
-        print("App terminated. Savings producst")
-        saveProducts()
     }
     
     
@@ -110,7 +108,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
         productCollectionView.scrollEnabled = true
         
-        saveProducts()
+        productLoaderSaver.saveProducts(self.products)
         
         if self.products.count == numberOfCells {
             localStorage.setObject(date, forKey:"timeOfLastDownload")
@@ -204,41 +202,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         self.searchBar.resignFirstResponder()
     }
     
-    // MARK: - NSCoding
-    
-    func saveProducts() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.products, toFile: Product.ArchiveURL.path!)
-        
-        if !isSuccessfulSave {
-            print("Failed to save products")
-        } else {
-            print("Products saved successfully")
-        }
-        
-    }
-    
-    func loadProducts() {
-        print("loadProducts called")
-
-        if let savedProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.ArchiveURL.path!) as? [Product]){
-            if self.timeSinceLastDownload >= 60.0 {
-                self.products = []
-                fetchProducts(numberOfCells, countOfCollection: products.count)
-                print("It about time for some new products!")
-            } else {
-                self.products = savedProducts
-                print("Loading saved products!")
-                //  print("\(self.products[0].face)")
-            }
-            
-            
-
-            
-        } else {
-            fetchProducts(numberOfCells, countOfCollection: products.count)
-            print("No saved products. Fetching some for you")
-        }
-    }
+    // MARK: - Timer for product caching
     
     func readAndSetTime() -> Double {
         localStorage = NSUserDefaults.standardUserDefaults()
