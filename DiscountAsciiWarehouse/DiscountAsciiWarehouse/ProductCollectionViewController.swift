@@ -36,6 +36,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var minimumTrigger:CGFloat!
     private var localStorage:NSUserDefaults!
     private var savedProducts = [Product]()
+    private var timeSinceLastDownload: CFAbsoluteTime!
+    private var date:CFAbsoluteTime!
     
     private var activityIndicator: UIActivityIndicatorView!
     
@@ -50,9 +52,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        
-        
         screenWidth = UIScreen.mainScreen().bounds.width
         screenHeight = UIScreen.mainScreen().bounds.height
         
@@ -61,20 +60,31 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         numberOfCells = deviceDeterminer.determineNumberOfCells(screenHeight)
         
+        timeSinceLastDownload = readAndSetTime()
+        
+        
         productDownloader = ProductDownloader(handler: self)
         loadProducts()
         
         self.searchBar.delegate = self
         
-        print("ViewWillAppear: The number of cells to download is: \(numberOfCells)")
-        
+        print("ViewWillAppear: The number of cells to load is: \(numberOfCells)")
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(false)
+        
+        let notificationCenter = NSNotificationCenter()
+        notificationCenter.addObserver(self, selector: #selector(appTerminated), name: UIApplicationWillTerminateNotification, object: nil)
     }
     
     override func viewWillDisappear(animated: Bool) {
+        print("viewWillDissapear called!")
+        saveProducts()
+    }
+    
+    func appTerminated() {
+        print("App terminated. Savings producst")
         saveProducts()
     }
     
@@ -91,17 +101,20 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     func onResponse(retrievedProducts: [Product]) {
         
         self.products += retrievedProducts
-//        
-        let dataToSave:Dictionary = ["cachedAllProducts": self.products]
         
         productCount = self.products.count
-//        print("There are \(localStorage.objectForKey("cachedAllProducts")!.count) cached products")
         
         self.productCollectionView.reloadData()
         activityIndicator.stopAnimating()
         
         minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
         productCollectionView.scrollEnabled = true
+        
+        saveProducts()
+        
+        if self.products.count == numberOfCells {
+            localStorage.setObject(date, forKey:"timeOfLastDownload")
+        }
         
         print("The product count is \(productCount)")
     }
@@ -205,16 +218,46 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     }
     
     func loadProducts() {
-//        var savedProducts:[Product]?
+        print("loadProducts called")
+
         if let savedProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.ArchiveURL.path!) as? [Product]){
+            if self.timeSinceLastDownload >= 60.0 {
+                self.products = []
+                fetchProducts(numberOfCells, countOfCollection: products.count)
+                print("It about time for some new products!")
+            } else {
                 self.products = savedProducts
                 print("Loading saved products!")
-//                print("\(self.products[0].face)")
+                //  print("\(self.products[0].face)")
+            }
+            
+            
 
             
-            } else {
-                fetchProducts(numberOfCells, countOfCollection: products.count)
-                print("Fetching new products")
+        } else {
+            fetchProducts(numberOfCells, countOfCollection: products.count)
+            print("No saved products. Fetching some for you")
         }
+    }
+    
+    func readAndSetTime() -> Double {
+        localStorage = NSUserDefaults.standardUserDefaults()
+        
+        var time: Double!
+        date = CFAbsoluteTimeGetCurrent()
+        
+        if localStorage.objectForKey("timeOfLastDownload") == nil {
+            localStorage.setObject(date, forKey:"timeOfLastDownload")
+            print("setting time \(date) to userDefualts")
+            time = 0.0
+
+        } else {
+            let timeOfLastDownload = localStorage.objectForKey("timeOfLastDownload") as! CFAbsoluteTime
+            let timeInterval = CFTimeInterval(date - timeOfLastDownload)
+            print("it has been \(timeInterval) since the last download")
+            time = timeInterval
+        }
+        
+        return time
     }
 }
