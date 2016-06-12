@@ -15,9 +15,12 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBOutlet weak var collectionViewFlowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var productCollectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
+
     
     private var productDownloader: ProductDownloader?
     private var products = [Product]()
+    private var inStockProducts = [Product]()
     private let product = Product()
     private var loadedProducts:[Product]?
     private var productCount:Int!
@@ -43,7 +46,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var activityIndicator: UIActivityIndicatorView!
     
     
-    @IBOutlet weak var segmentControl: UISegmentedControl!
+
     
     
     
@@ -67,19 +70,21 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if self.timeSinceLastDownload >= 60.0 {
             self.products = []
-            fetchProducts(numberOfCells, countOfCollection: products.count)
+            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0)
             print("It about time for some new products!")
         } else {
-            self.products = productLoaderSaver.loadProducts()
+            let productsCollection = productLoaderSaver.loadProducts()
+            self.products = productsCollection[0]
+            self.inStockProducts = productsCollection[1]
             if self.products == [] {
-                fetchProducts(numberOfCells, countOfCollection: products.count)
+                fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0)
                 print("No saved products. Fetching some for you")
             }
         }
         
         self.searchBar.delegate = self
         
-        print("ViewWillAppear: loaded \(self.products.count) cells")
+        print("ViewWillAppear: loaded \(self.products.count) products")
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -96,9 +101,18 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     // MARK: - API Call Protocol Methods
     
-    func onResponse(retrievedProducts: [Product]) {
+    func onResponse(retrievedProducts: [Product]?, inStockProducts: [Product]?) {
         
-        self.products += retrievedProducts
+        if retrievedProducts != nil {
+            self.products += retrievedProducts!
+            print("adding \(retrievedProducts!.count) products to allProducts")
+        }
+        
+        if inStockProducts != nil {
+            self.inStockProducts += inStockProducts!
+            print("adding \(inStockProducts!.count) products to inStockProducts")
+        }
+        
         
         productCount = self.products.count
         
@@ -108,7 +122,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
         productCollectionView.scrollEnabled = true
         
-        productLoaderSaver.saveProducts(self.products)
+        productLoaderSaver.saveProducts(self.products, inStockProducts: self.inStockProducts)
         
         if self.products.count == numberOfCells {
             localStorage.setObject(date, forKey:"timeOfLastDownload")
@@ -125,14 +139,28 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
-        return self.products.count
+        
+        var numberOfCells = Int()
+        
+        if segmentedControl.selectedSegmentIndex == 0 {
+            numberOfCells = self.products.count
+        } else {
+            numberOfCells = self.inStockProducts.count
+        }
+        
+        return numberOfCells
     }
     
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ProductCell", forIndexPath: indexPath) as! CustomCell
+        
+        if segmentedControl.selectedSegmentIndex == 0 {
+            cell.face.text = self.products[indexPath.row].face
+        } else {
+            cell.face.text = self.inStockProducts[indexPath.row].face
+        }
         
         cell.face.text = self.products[indexPath.row].face
         
@@ -149,9 +177,16 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 
                 if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
                     scrollView.scrollEnabled = false
-                    fetchProducts(21, countOfCollection: self.products.count)
-                    print("Fetching 21")
-                    print("Skipping \(products.count)")
+                    if segmentedControl.selectedSegmentIndex == 0 {
+                        fetchProducts(21, countOfCollection: self.products.count, inStock: 0)
+                        print("Fetching 21")
+                        print("Skipping \(products.count)")
+                    } else if segmentedControl.selectedSegmentIndex == 1 {
+                        fetchProducts(21, countOfCollection: self.products.count, inStock: 1)
+                        print("Fetching 21 inStock products")
+                        print("Skipping \(products.count)")
+                    }
+                    
                 }
             }
         }
@@ -161,9 +196,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // MARK: - XXX
     
     
-    func fetchProducts(numberOfProducts: Int, countOfCollection: Int) {
-            startActivityIndicator()
-            productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection)
+    func fetchProducts(numberOfProducts: Int, countOfCollection: Int, inStock: Int) {
+        startActivityIndicator()
+        productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, inStock: inStock)
     }
     
     func formatCellDimensions(){
@@ -173,7 +208,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     
     @IBAction func segmentedControlPressed(sender: AnyObject) {
-//        productCollectionView.reloadData()
+        productCollectionView.reloadData()
     }
     
     func startActivityIndicator() {

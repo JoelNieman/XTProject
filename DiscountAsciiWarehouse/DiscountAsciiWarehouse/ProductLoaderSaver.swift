@@ -14,8 +14,8 @@ public class ProductLoaderSaver {
     
     // MARK: - NSCoding
     
-    func saveProducts(products: [Product]) {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(products, toFile: Product.ArchiveURL.path!)
+    func saveProducts(products: [Product], inStockProducts: [Product]) {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(products, toFile: Product.allProductURL.path!) && NSKeyedArchiver.archiveRootObject(inStockProducts, toFile: Product.inStockURL.path!)
         
         if !isSuccessfulSave {
             print("Failed to save products")
@@ -25,19 +25,31 @@ public class ProductLoaderSaver {
         
     }
     
-    func loadProducts() -> [Product]{
+    func loadProducts() -> [[Product]]{
         print("loadProducts called")
         
-        if let savedProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.ArchiveURL.path!) as? [Product]){
-                let products = savedProducts
-                print("Loading saved products!")
+        var allProducts = [Product]()
+        var inStockProducts = [Product]()
+        
+        if let savedAllProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.allProductURL.path!) as? [Product]){
+                let products = savedAllProducts
+                print("Loading \(products.count) saved all products!")
                 //  print("\(self.products[0].face)")
-                return products
-                
-            
+                allProducts = products
         } else {
-            return []
+            allProducts = []
         }
+        
+        if let savedInStockProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.inStockURL.path!) as? [Product]){
+            let products = savedInStockProducts
+            print("Loading \(products.count) saved inStock products!")
+            //  print("\(self.products[0].face)")
+            inStockProducts = products
+        } else {
+            allProducts = []
+        }
+        
+        return[allProducts, inStockProducts]
     }
     
     

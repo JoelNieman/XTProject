@@ -15,19 +15,19 @@ public class DeviceDeterminer {
         var returnValue = 0
         
         if (screenHeight > 700) {
-            print("This is a 6 Plus")
+            print("This is an iPhone 6 Plus screen size")
             returnValue = 18
         } else if (screenHeight > 650) {
-            print("This is a 6")
+            print("This is an iPhone 6 screen size")
             returnValue = 15
         } else if (screenHeight > 550) {
-            print("this is a 5")
+            print("this is an iPhone 5 screen size")
             returnValue = 15
         } else if (screenHeight > 450) {
-            print("this is a 4")
+            print("this is an iPhone 4 screen size")
             returnValue = 9
         } else {
-            print("This is a 3 or eaarlier")
+            print("This is an iPhone 3 or earlier")
             returnValue = 8
         }
         return returnValue

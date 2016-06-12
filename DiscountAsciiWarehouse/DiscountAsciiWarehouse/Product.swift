@@ -93,6 +93,7 @@ class Product: NSObject, NSCoding {
         self.init(type: type!, id: id!, size: size!, price: price!, face: face!, stock: stock!, tags: tags!, lastItem: lastItem!)
     }
     
-    static let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-    static var ArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("Products")
+    static let documentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+    static var allProductURL = documentsDirectory.URLByAppendingPathComponent("Products")
+    static var inStockURL = documentsDirectory.URLByAppendingPathComponent("inStock")
 }

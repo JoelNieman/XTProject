@@ -8,6 +8,6 @@
 
 import Foundation
 
-@objc protocol ProductResponseDelegate {
-    optional func onResponse(products: [Product])
+protocol ProductResponseDelegate {
+    func onResponse(products: [Product]?, inStockProducts: [Product]?)
 }
