@@ -10,9 +10,8 @@ import Foundation
 
 class ProductDownloader {
     
-    var products:Array = [Product]()
-    var inStockProducts = [Product]()
-    var searchedProducts = [Product]()
+    
+//    var searchedProducts = [Product]()
     var dnJson = NSData()
     var httpResponse: NSHTTPURLResponse?
     private let lastProduct = Product(face: ":(", lastItem: true)
@@ -23,15 +22,15 @@ class ProductDownloader {
     }
 
     
-    func downloadProducts(limit: Int, skip: Int, inStock: Int, search: String) {
+    func downloadProducts(limit: Int, skip: Int, inStock: Int, search: String?) {
         
         var myArrayOfProducts:Array = [Product]()
         
         var myUrl = NSURL()
         
-        if search != "" {
-            myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)&q=\(search)")!
-//            print(myUrl)
+        if search != nil {
+            myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=200&skip=0&q=\(search!)")!
+            print(myUrl)
             print("Making an api call for searched products")
         } else if inStock == 0 {
             myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)")!
@@ -63,16 +62,20 @@ class ProductDownloader {
                             dispatch_async(dispatch_get_main_queue()) {
                                 
                                 if inStock == 0 {
-                                    if search != "" {
+                                    if search == nil {
+                                        
+                                        print("All products jsonString is empty")
+                                        var lastProductCollection = [Product]()
+                                        lastProductCollection.append(self.lastProduct)
+                                        self.handler.onResponse(lastProductCollection, inStockProducts: nil, searchedProducts: nil)
+                    
+                                    } else {
                                         print("Search products jsonString is empty")
                                         var lastProductCollection = [Product]()
                                         lastProductCollection.append(self.lastProduct)
                                         self.handler.onResponse(nil, inStockProducts: nil, searchedProducts: lastProductCollection)
                                     }
-                                    print("All products jsonString is empty")
-                                    var lastProductCollection = [Product]()
-                                    lastProductCollection.append(self.lastProduct)
-                                    self.handler.onResponse(lastProductCollection, inStockProducts: nil, searchedProducts: nil)
+                                    
                                 } else if inStock == 1 {
                                     print("In Stock products jsonString is empty")
                                     var lastInStockProductCollection = [Product]()
@@ -85,7 +88,7 @@ class ProductDownloader {
                         } else {
                             switch inStock {
                             case 0:
-                                if search != "" {
+                                if search != nil {
                                     self.parseJSON(myArray, inStock: false, productSearch: true)
                                 } else {
                                     self.parseJSON(myArray, inStock: false, productSearch: false)
@@ -115,8 +118,9 @@ class ProductDownloader {
     
     func parseJSON(array: NSArray, inStock: Bool, productSearch: Bool) {
         
-//        var productArray = [Product]()
-//        var inStockProducts = [Product]()
+        var products:Array = [Product]()
+        var inStockProducts = [Product]()
+        var searchedProducts = [Product]()
         
         for json in array {
             
@@ -175,16 +179,16 @@ class ProductDownloader {
                     switch inStock {
                     case false:
                         if productSearch == true {
-                            self.searchedProducts.append(product)
+                            searchedProducts.append(product)
                         } else {
-                            self.products.append(product)
+                            products.append(product)
                             
                             if product.stock > 0 {
-                                self.inStockProducts.append(product)
+                                inStockProducts.append(product)
                                 }
                         }
                     case true:
-                            self.inStockProducts.append(product)
+                            inStockProducts.append(product)
                             
                     default:
                         print("Error adding products to collections")
@@ -200,7 +204,7 @@ class ProductDownloader {
         }
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.handler.onResponse(self.products, inStockProducts: self.inStockProducts, searchedProducts: self.searchedProducts)
+            self.handler.onResponse(products, inStockProducts: inStockProducts, searchedProducts: searchedProducts)
         }
     }
 }
