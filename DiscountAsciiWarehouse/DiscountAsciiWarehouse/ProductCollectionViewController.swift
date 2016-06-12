@@ -72,8 +72,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if self.timeSinceLastDownload >= 60.0 {
             self.products = []
-            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: nil)
             print("It about time for some new products!")
+            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: nil)
         } else {
             let productsCollection = productLoaderSaver.loadProducts()
             self.products = productsCollection[0]
@@ -106,9 +106,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // MARK: - API Call Protocol Methods
     
     func onResponse(retrievedProducts: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?) {
-//        var mySearchedProducts: [Product]?
-//        var myInStockProducts: [Product]?
-//        var myRetrievedProducts: [Product]?
         
         
         if let mySearchedProducts = searchedProducts {
@@ -117,6 +114,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 segmentedControl.selectedSegmentIndex = UISegmentedControlNoSegment
                 segmentedControl.selectedSegmentIndex = 2
                 print("adding \(searchedProducts!.count) products to searchedProducts")
+                print("There are now \(self.searchedProducts.count) searched products")
             } else {
                 print("nothing to add to searched products")
             }
@@ -125,6 +123,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         if let myInStockProducts = inStockProducts {
             self.inStockProducts += inStockProducts!
             print("adding \(inStockProducts!.count) products to inStockProducts")
+            print("There are now \(self.inStockProducts.count) inStock products")
         } else {
             print("nothing to add to inStock products")
         }
@@ -132,6 +131,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         if let myRetrievedProducts = retrievedProducts {
             self.products += retrievedProducts!
             print("adding \(retrievedProducts!.count) products to allProducts")
+            print("There are now \(self.products.count) products")
         } else {
             print("nothing to add to searched products")
         }
@@ -201,12 +201,12 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
                     scrollView.scrollEnabled = false
                     if segmentedControl.selectedSegmentIndex == 0 {
-                        fetchProducts(21, countOfCollection: self.products.count, inStock: 0, searched: nil)
-                        print("Fetching 21")
+                        fetchProducts(30, countOfCollection: self.products.count, inStock: 0, searched: nil)
+                        print("Fetching 30 products")
                         print("Skipping \(products.count)")
                     } else if segmentedControl.selectedSegmentIndex == 1 {
-                        fetchProducts(21, countOfCollection: self.inStockProducts.count, inStock: 1, searched: nil)
-                        print("Fetching 21 inStock products")
+                        fetchProducts(30, countOfCollection: self.inStockProducts.count, inStock: 1, searched: nil)
+                        print("Fetching 30 inStock products")
                         print("Skipping \(products.count)")
                     }
                     
@@ -233,6 +233,15 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBAction func segmentedControlPressed(sender: AnyObject) {
         searchBar.text = nil
         productCollectionView.reloadData()
+        
+        switch segmentedControl.selectedSegmentIndex {
+        case 0:
+            print("There are \(self.products.count) products on this tab")
+        case 1:
+            print("There are now \(self.inStockProducts.count) inStock products on this tab")
+        default:
+            print("There are now \(self.searchedProducts.count) searched products on this tab")
+        }
     }
     
     func startActivityIndicator() {
