@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -39,14 +40,14 @@
                                 <exclude reference="rfk-HA-akv"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="4aO-S3-Z6M"/>
+                                <exclude reference="fGD-1X-RNU"/>
                                 <exclude reference="PUO-oa-Twp"/>
                                 <exclude reference="VQB-II-eOF"/>
                                 <exclude reference="Z2f-tJ-wL4"/>
                                 <exclude reference="eeS-nt-5hQ"/>
                                 <exclude reference="pSb-uf-7IC"/>
                                 <exclude reference="twH-KF-nbe"/>
-                                <exclude reference="4aO-S3-Z6M"/>
-                                <exclude reference="fGD-1X-RNU"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -54,14 +55,14 @@
                                 <include reference="rfk-HA-akv"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="4aO-S3-Z6M"/>
+                                <exclude reference="fGD-1X-RNU"/>
                                 <include reference="PUO-oa-Twp"/>
                                 <exclude reference="VQB-II-eOF"/>
                                 <include reference="Z2f-tJ-wL4"/>
                                 <exclude reference="eeS-nt-5hQ"/>
                                 <exclude reference="pSb-uf-7IC"/>
                                 <include reference="twH-KF-nbe"/>
-                                <include reference="4aO-S3-Z6M"/>
-                                <exclude reference="fGD-1X-RNU"/>
                             </mask>
                         </variation>
                     </view>

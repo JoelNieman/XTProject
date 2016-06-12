@@ -72,14 +72,14 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if self.timeSinceLastDownload >= 60.0 {
             self.products = []
-            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: "")
+            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: nil)
             print("It about time for some new products!")
         } else {
             let productsCollection = productLoaderSaver.loadProducts()
             self.products = productsCollection[0]
             self.inStockProducts = productsCollection[1]
             if self.products == [] {
-                fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: "")
+                fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: nil)
                 print("No saved products. Fetching some for you")
             }
         }
@@ -106,22 +106,34 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // MARK: - API Call Protocol Methods
     
     func onResponse(retrievedProducts: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?) {
+//        var mySearchedProducts: [Product]?
+//        var myInStockProducts: [Product]?
+//        var myRetrievedProducts: [Product]?
         
-        if searchedProducts?.count != 0 {
-            self.searchedProducts = searchedProducts!
-            segmentedControl.selectedSegmentIndex = UISegmentedControlNoSegment
-            segmentedControl.selectedSegmentIndex = 2
-            print("adding \(searchedProducts!.count) products to searchedProducts")
+        
+        if let mySearchedProducts = searchedProducts {
+            if mySearchedProducts.count > 0{
+                self.searchedProducts = mySearchedProducts
+                segmentedControl.selectedSegmentIndex = UISegmentedControlNoSegment
+                segmentedControl.selectedSegmentIndex = 2
+                print("adding \(searchedProducts!.count) products to searchedProducts")
+            } else {
+                print("nothing to add to searched products")
+            }
         }
-        
-        if inStockProducts?.count != 0 {
+
+        if let myInStockProducts = inStockProducts {
             self.inStockProducts += inStockProducts!
             print("adding \(inStockProducts!.count) products to inStockProducts")
+        } else {
+            print("nothing to add to inStock products")
         }
         
-        if retrievedProducts?.count != 0 {
+        if let myRetrievedProducts = retrievedProducts {
             self.products += retrievedProducts!
             print("adding \(retrievedProducts!.count) products to allProducts")
+        } else {
+            print("nothing to add to searched products")
         }
         
         productCount = self.products.count
@@ -129,15 +141,13 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         self.productCollectionView.reloadData()
         activityIndicator.stopAnimating()
         
-        minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
-        productCollectionView.scrollEnabled = true
+        setMinimumTrigger()
         
         productLoaderSaver.saveProducts(self.products, inStockProducts: self.inStockProducts)
         
         if self.products.count == numberOfCells {
             localStorage.setObject(date, forKey:"timeOfLastDownload")
         }
-        
         print("The product count is \(productCount)")
     }
     
@@ -191,11 +201,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
                     scrollView.scrollEnabled = false
                     if segmentedControl.selectedSegmentIndex == 0 {
-                        fetchProducts(21, countOfCollection: self.products.count, inStock: 0, searched: "")
+                        fetchProducts(21, countOfCollection: self.products.count, inStock: 0, searched: nil)
                         print("Fetching 21")
                         print("Skipping \(products.count)")
                     } else if segmentedControl.selectedSegmentIndex == 1 {
-                        fetchProducts(21, countOfCollection: self.products.count, inStock: 1, searched: "")
+                        fetchProducts(21, countOfCollection: self.inStockProducts.count, inStock: 1, searched: nil)
                         print("Fetching 21 inStock products")
                         print("Skipping \(products.count)")
                     }
@@ -209,7 +219,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // MARK: - XXX
     
     
-    func fetchProducts(numberOfProducts: Int, countOfCollection: Int, inStock: Int, searched: String) {
+    func fetchProducts(numberOfProducts: Int, countOfCollection: Int, inStock: Int, searched: String?) {
         startActivityIndicator()
         productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, inStock: inStock, search: searched)
     }
@@ -243,6 +253,15 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         self.navigationItem.rightBarButtonItem = barButton
     }
     
+    func setMinimumTrigger() {
+        minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
+        productCollectionView.scrollEnabled = true
+    }
+    
+    
+    
+    
+    
     // MARK: - Search functionality
     
     internal func searchBarShouldBeginEditing(searchBar: UISearchBar) -> Bool {
@@ -254,10 +273,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     internal func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         
         searchTag = searchBar.text?.lowercaseString
-        print("The search tag is \(searchTag!)")
+        var searchTagForURL = searchTag?.stringByReplacingOccurrencesOfString(" ", withString: "")
+        print("The searchTagForUrl is \(searchTagForURL)")
         
         print("Fetching searched products")
-        fetchProducts(0, countOfCollection: 0, inStock: 0, searched: searchTag!)
+        fetchProducts(0, countOfCollection: 0, inStock: 0, searched: searchTagForURL)
         
         self.searchBar.showsCancelButton = false
         self.searchBar.resignFirstResponder()
