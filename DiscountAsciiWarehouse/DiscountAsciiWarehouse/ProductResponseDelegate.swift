@@ -9,5 +9,5 @@
 import Foundation
 
 protocol ProductResponseDelegate {
-    func onResponse(products: [Product]?, inStockProducts: [Product]?)
+    func onResponse(products: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?)
 }

@@ -26,7 +26,7 @@
             </objects>
             <point key="canvasLocation" x="-526.5" y="179.25"/>
         </scene>
-        <!--Discount Ascii Warehouse-->
+        <!--(◕‿◕)-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ProductCollectionViewController" customModule="DiscountAsciiWarehouse" customModuleProvider="target" sceneMemberID="viewController">
@@ -197,7 +197,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="Discount Ascii Warehouse" id="ssE-uV-gRr"/>
+                    <navigationItem key="navigationItem" title="(◕‿◕)" id="ssE-uV-gRr"/>
                     <connections>
                         <outlet property="collectionViewFlowLayout" destination="YGb-2Y-ij6" id="h1h-Fq-7ET"/>
                         <outlet property="productCollectionView" destination="caL-GE-Lap" id="o1w-Nf-BnA"/>
@@ -221,7 +221,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
-                            <color key="textColor" red="0.80000001190000003" green="0.40000000600000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
