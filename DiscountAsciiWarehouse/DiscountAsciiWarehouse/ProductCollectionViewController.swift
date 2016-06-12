@@ -200,16 +200,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 
                 if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
                     scrollView.scrollEnabled = false
-                    if segmentedControl.selectedSegmentIndex == 0 {
+                    if segmentedControl.selectedSegmentIndex != 2 {
                         fetchProducts(30, countOfCollection: self.products.count, inStock: 0, searched: nil)
                         print("Fetching 30 products")
                         print("Skipping \(products.count)")
-                    } else if segmentedControl.selectedSegmentIndex == 1 {
-                        fetchProducts(30, countOfCollection: self.inStockProducts.count, inStock: 1, searched: nil)
-                        print("Fetching 30 inStock products")
-                        print("Skipping \(products.count)")
                     }
-                    
                 }
             }
         }
@@ -238,9 +233,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         case 0:
             print("There are \(self.products.count) products on this tab")
         case 1:
-            print("There are now \(self.inStockProducts.count) inStock products on this tab")
+            print("There are \(self.inStockProducts.count) inStock products on this tab")
         default:
-            print("There are now \(self.searchedProducts.count) searched products on this tab")
+            print("There are \(self.searchedProducts.count) searched products on this tab")
         }
     }
     
