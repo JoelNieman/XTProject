@@ -16,13 +16,16 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBOutlet weak var productCollectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
-
+    @IBOutlet weak var productPreview: UIView!
+    @IBOutlet weak var productPreviewFace: UILabel!
+    @IBOutlet weak var priceOutlet: UILabel!
+    @IBOutlet weak var quantityOutlet: UILabel!
     
     private var productDownloader: ProductDownloader?
     private var products = [Product]()
     private var inStockProducts = [Product]()
     private var searchedProducts = [Product]()
-    private let product = Product()
+    private var product = Product()
     private var loadedProducts:[Product]?
     private var productCount:Int!
     private var searchTag: String?
@@ -180,10 +183,13 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if segmentedControl.selectedSegmentIndex == 0 {
             cell.face.text = self.products[indexPath.row].face
+            cell.face.adjustsFontSizeToFitWidth = true
         } else if segmentedControl.selectedSegmentIndex == 1 {
             cell.face.text = self.inStockProducts[indexPath.row].face
+            cell.face.adjustsFontSizeToFitWidth = true
         } else {
             cell.face.text = self.searchedProducts[indexPath.row].face
+            cell.face.adjustsFontSizeToFitWidth = true
         }
         
         
@@ -191,6 +197,51 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         return cell
     }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
+        switch segmentedControl.selectedSegmentIndex {
+        case 0:
+            self.product = products[indexPath.row]
+            productPreviewFace.text = self.product.face
+            productPreviewFace.adjustsFontSizeToFitWidth = true
+            priceOutlet.text = "$\(Int(self.product.price))"
+            if self.product.stock > 0 {
+                quantityOutlet.text = "Only \(self.product.stock) left!"
+            } else {
+                quantityOutlet.text = "Out of stock"
+            }
+            
+        case 1:
+            self.product = inStockProducts[indexPath.row]
+            productPreviewFace.text = self.product.face
+            productPreviewFace.adjustsFontSizeToFitWidth = true
+            priceOutlet.text = "$\(Int(self.product.price))"
+            if self.product.stock > 0 {
+                quantityOutlet.text = "Only \(self.product.stock) left!"
+            } else {
+                quantityOutlet.text = "Out of stock"
+            }
+        default:
+            self.product = searchedProducts[indexPath.row]
+            productPreviewFace.text = self.product.face
+            productPreviewFace.adjustsFontSizeToFitWidth = true
+            priceOutlet.text = "$\(Int(self.product.price))"
+            if self.product.stock > 0 {
+                quantityOutlet.text = "Only \(self.product.stock) left!"
+            } else {
+                quantityOutlet.text = "Out of stock"
+            }
+        }
+        
+        if self.product.lastItem != true {
+            productPreview.hidden = false
+        } else {
+            productPreview.hidden = true
+        }
+        
+    }
+    
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         
@@ -237,6 +288,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         default:
             print("There are \(self.searchedProducts.count) searched products on this tab")
         }
+        
+        productPreview.hidden = true
     }
     
     func startActivityIndicator() {
@@ -313,5 +366,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         }
         
         return time
+    }
+
+    @IBAction func closeButtonPressed(sender: AnyObject) {
+        productPreview.hidden = true
     }
 }
