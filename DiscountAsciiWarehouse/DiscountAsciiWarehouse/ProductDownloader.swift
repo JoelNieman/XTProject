@@ -10,7 +10,9 @@ import Foundation
 
 class ProductDownloader {
     
-    var products:Array = [Product]();
+    var products:Array = [Product]()
+    var inStockProducts = [Product]()
+    var taggedProducts = [Product]()
     var dnJson = NSData()
     var httpResponse: NSHTTPURLResponse?
     private let lastProduct = Product(face: ":(", lastItem: true)
@@ -21,7 +23,7 @@ class ProductDownloader {
     }
 
     
-    func downloadProducts(limit: Int, skip: Int) {
+    func downloadProducts(limit: Int, skip: Int, inStock: Int) {
         
         var myArrayOfProducts:Array = [Product]()
         let url = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)")
@@ -44,10 +46,20 @@ class ProductDownloader {
                         
                         if jsonString == "" {
                             dispatch_async(dispatch_get_main_queue()) {
-                                print("jsonString is empty")
-                                var lastProductCollection = [Product]()
-                                lastProductCollection.append(self.lastProduct)
-                                self.handler.onResponse!(lastProductCollection)
+                                
+                                if inStock == 0 {
+                                    print("All products jsonString is empty")
+                                    var lastProductCollection = [Product]()
+                                    lastProductCollection.append(self.lastProduct)
+                                    self.handler.onResponse(lastProductCollection, inStockProducts: nil)
+                                } else if inStock == 1 {
+                                    print("In Stock products jsonString is empty")
+                                    var lastInStockProductCollection = [Product]()
+                                    lastInStockProductCollection.append(self.lastProduct)
+                                    self.handler.onResponse(nil, inStockProducts: lastInStockProductCollection)
+                                } else {
+                                    print("Error appending last item to collection")
+                                }
                             }
                         } else {
                             self.parseJSON(myArray)
@@ -70,7 +82,8 @@ class ProductDownloader {
     
     func parseJSON(array: NSArray) {
         
-        var productArray = [Product]()
+//        var productArray = [Product]()
+//        var inStockProducts = [Product]()
         
         for json in array {
             
@@ -126,7 +139,11 @@ class ProductDownloader {
 //                        print("The stock is: \(product.stock)")
 //                        print("The tags are: \(product.tags)")
                     
-                        productArray.append(product)
+                        self.products.append(product)
+                    
+                    if product.stock > 0 {
+                        self.inStockProducts.append(product)
+                    }
                     
                 } catch {
 //                    print("Error serializing JSON")
@@ -138,7 +155,7 @@ class ProductDownloader {
         }
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.handler.onResponse!(productArray)
+            self.handler.onResponse(self.products, inStockProducts: self.inStockProducts)
         }
     }
 }

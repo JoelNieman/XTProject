@@ -15,9 +15,12 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBOutlet weak var collectionViewFlowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var productCollectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
+
     
     private var productDownloader: ProductDownloader?
     private var products = [Product]()
+    private var inStockProducts = [Product]()
     private let product = Product()
     private var loadedProducts:[Product]?
     private var productCount:Int!
@@ -43,7 +46,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var activityIndicator: UIActivityIndicatorView!
     
     
-    @IBOutlet weak var segmentControl: UISegmentedControl!
+
     
     
     
@@ -67,12 +70,12 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if self.timeSinceLastDownload >= 60.0 {
             self.products = []
-            fetchProducts(numberOfCells, countOfCollection: products.count)
+            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0)
             print("It about time for some new products!")
         } else {
             self.products = productLoaderSaver.loadProducts()
             if self.products == [] {
-                fetchProducts(numberOfCells, countOfCollection: products.count)
+                fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0)
                 print("No saved products. Fetching some for you")
             }
         }
@@ -96,9 +99,17 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     // MARK: - API Call Protocol Methods
     
-    func onResponse(retrievedProducts: [Product]) {
+    func onResponse(retrievedProducts: [Product]?, inStockProducts: [Product]?) {
         
-        self.products += retrievedProducts
+        if retrievedProducts != nil {
+            self.products += retrievedProducts!
+        }
+        
+        if inStockProducts != nil {
+            self.inStockProducts += inStockProducts!
+            print("adding \(inStockProducts!.count) products to inStockProducts")
+        }
+        
         
         productCount = self.products.count
         
@@ -149,9 +160,16 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 
                 if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
                     scrollView.scrollEnabled = false
-                    fetchProducts(21, countOfCollection: self.products.count)
-                    print("Fetching 21")
-                    print("Skipping \(products.count)")
+                    if segmentedControl.selectedSegmentIndex == 0 {
+                        fetchProducts(21, countOfCollection: self.products.count, inStock: 0)
+                        print("Fetching 21")
+                        print("Skipping \(products.count)")
+                    } else if segmentedControl.selectedSegmentIndex == 1 {
+                        fetchProducts(21, countOfCollection: self.products.count, inStock: 1)
+                        print("Fetching 21 inStock products")
+                        print("Skipping \(products.count)")
+                    }
+                    
                 }
             }
         }
@@ -161,9 +179,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // MARK: - XXX
     
     
-    func fetchProducts(numberOfProducts: Int, countOfCollection: Int) {
-            startActivityIndicator()
-            productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection)
+    func fetchProducts(numberOfProducts: Int, countOfCollection: Int, inStock: Int) {
+        startActivityIndicator()
+        productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, inStock: inStock)
     }
     
     func formatCellDimensions(){

@@ -202,7 +202,7 @@
                         <outlet property="collectionViewFlowLayout" destination="YGb-2Y-ij6" id="h1h-Fq-7ET"/>
                         <outlet property="productCollectionView" destination="caL-GE-Lap" id="o1w-Nf-BnA"/>
                         <outlet property="searchBar" destination="ufn-EI-fxM" id="qke-W5-JRt"/>
-                        <outlet property="segmentControl" destination="xY2-MQ-Vq5" id="uT1-jo-FWZ"/>
+                        <outlet property="segmentedControl" destination="xY2-MQ-Vq5" id="soo-nv-FIX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
