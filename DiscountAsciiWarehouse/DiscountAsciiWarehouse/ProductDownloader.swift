@@ -11,10 +11,10 @@ import Foundation
 class ProductDownloader {
     
     
-//    var searchedProducts = [Product]()
+    private var collectionOfAllProducts = [Product]()
     var dnJson = NSData()
     var httpResponse: NSHTTPURLResponse?
-    private let lastProduct = Product(face: ":(", lastItem: true)
+    private let lastProduct = Product(type: "", id: "", size: 0, price: 0, face: ":(", stock: 0, tags: [], lastItem: true)
     
     let handler: ProductResponseDelegate
     init(handler: ProductResponseDelegate) {
@@ -30,16 +30,16 @@ class ProductDownloader {
         
         if search != nil {
             myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=200&skip=0&q=\(search!)")!
-            print(myUrl)
+//            print(myUrl)
             print("Making an api call for searched products")
         } else if inStock == 0 {
             myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)")!
             print("Making an api call for All products")
-            print(myUrl)
+//            print(myUrl)
         } else if inStock == 1{
             myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)&onlyInStock=true")!
             print("Making an api call for inStock products")
-            print(myUrl)
+//            print(myUrl)
         }
 
         let session = NSURLSession.sharedSession()
@@ -62,24 +62,24 @@ class ProductDownloader {
                             dispatch_async(dispatch_get_main_queue()) {
                                 
                                 if inStock == 0 {
-                                    if search == nil {
+                                    if search == nil || search == "" {
                                         
                                         print("All products jsonString is empty")
                                         var lastProductCollection = [Product]()
-                                        lastProductCollection.append(self.lastProduct)
+                                        lastProductCollection.append(self.lastProduct!)
                                         self.handler.onResponse(lastProductCollection, inStockProducts: nil, searchedProducts: nil)
                     
                                     } else {
                                         print("Search products jsonString is empty")
                                         var lastProductCollection = [Product]()
-                                        lastProductCollection.append(self.lastProduct)
+                                        lastProductCollection.append(self.lastProduct!)
                                         self.handler.onResponse(nil, inStockProducts: nil, searchedProducts: lastProductCollection)
                                     }
                                     
                                 } else if inStock == 1 {
                                     print("In Stock products jsonString is empty")
                                     var lastInStockProductCollection = [Product]()
-                                    lastInStockProductCollection.append(self.lastProduct)
+                                    lastInStockProductCollection.append(self.lastProduct!)
                                     self.handler.onResponse(nil, inStockProducts: lastInStockProductCollection, searchedProducts: nil)
                                 } else {
                                     print("Error appending last item to collection")
@@ -167,14 +167,6 @@ class ProductDownloader {
                         } else { print("there are no values for key: tags") }
                     
                         product.lastItem = false
-
-//                        print("The type is : \(product.type)")
-//                        print("The id is   : \(product.id)")
-//                        print("The size is : \(product.size)")
-//                        print("The price is: \(product.price)")
-//                        print("\(product.face)")
-//                        print("The stock is: \(product.stock)")
-//                        print("The tags are: \(product.tags)")
                     
                     switch inStock {
                     case false:
@@ -182,13 +174,14 @@ class ProductDownloader {
                             searchedProducts.append(product)
                         } else {
                             products.append(product)
-                            
-                            if product.stock > 0 {
-                                inStockProducts.append(product)
-                                }
                         }
                     case true:
-                            inStockProducts.append(product)
+                        for previouslyFetchedProduct in collectionOfAllProducts {
+                            if product.id != previouslyFetchedProduct.id {
+                                    inStockProducts.append(product)
+                            }
+                        }
+                        
                             
                     default:
                         print("Error adding products to collections")
