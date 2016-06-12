@@ -21,9 +21,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var productDownloader: ProductDownloader?
     private var products = [Product]()
     private var inStockProducts = [Product]()
+    private var searchedProducts = [Product]()
     private let product = Product()
     private var loadedProducts:[Product]?
     private var productCount:Int!
+    private var searchTag: String?
     
     private let leftAndRightPaddings:CGFloat = 24.0
     private let numberOfItemsInRow:CGFloat = 3.0
@@ -70,20 +72,22 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if self.timeSinceLastDownload >= 60.0 {
             self.products = []
-            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0)
+            fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: "")
             print("It about time for some new products!")
         } else {
             let productsCollection = productLoaderSaver.loadProducts()
             self.products = productsCollection[0]
             self.inStockProducts = productsCollection[1]
             if self.products == [] {
-                fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0)
+                fetchProducts(numberOfCells, countOfCollection: products.count, inStock: 0, searched: "")
                 print("No saved products. Fetching some for you")
             }
         }
         
         self.searchBar.delegate = self
         
+        setGroceryCartButton()
+
         print("ViewWillAppear: loaded \(self.products.count) products")
     }
     
@@ -101,18 +105,24 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     // MARK: - API Call Protocol Methods
     
-    func onResponse(retrievedProducts: [Product]?, inStockProducts: [Product]?) {
+    func onResponse(retrievedProducts: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?) {
         
-        if retrievedProducts != nil {
-            self.products += retrievedProducts!
-            print("adding \(retrievedProducts!.count) products to allProducts")
+        if searchedProducts?.count != 0 {
+            self.searchedProducts = searchedProducts!
+            segmentedControl.selectedSegmentIndex = UISegmentedControlNoSegment
+            segmentedControl.selectedSegmentIndex = 2
+            print("adding \(searchedProducts!.count) products to searchedProducts")
         }
         
-        if inStockProducts != nil {
+        if inStockProducts?.count != 0 {
             self.inStockProducts += inStockProducts!
             print("adding \(inStockProducts!.count) products to inStockProducts")
         }
         
+        if retrievedProducts?.count != 0 {
+            self.products += retrievedProducts!
+            print("adding \(retrievedProducts!.count) products to allProducts")
+        }
         
         productCount = self.products.count
         
@@ -144,8 +154,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if segmentedControl.selectedSegmentIndex == 0 {
             numberOfCells = self.products.count
-        } else {
+        } else if segmentedControl.selectedSegmentIndex == 1 {
             numberOfCells = self.inStockProducts.count
+        } else {
+            numberOfCells = self.searchedProducts.count
         }
         
         return numberOfCells
@@ -158,11 +170,12 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if segmentedControl.selectedSegmentIndex == 0 {
             cell.face.text = self.products[indexPath.row].face
-        } else {
+        } else if segmentedControl.selectedSegmentIndex == 1 {
             cell.face.text = self.inStockProducts[indexPath.row].face
+        } else {
+            cell.face.text = self.searchedProducts[indexPath.row].face
         }
         
-        cell.face.text = self.products[indexPath.row].face
         
         formatCellDimensions()
         
@@ -178,11 +191,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 if distanceFromBottom < self.scrollTriggerDistanceFromBottom {
                     scrollView.scrollEnabled = false
                     if segmentedControl.selectedSegmentIndex == 0 {
-                        fetchProducts(21, countOfCollection: self.products.count, inStock: 0)
+                        fetchProducts(21, countOfCollection: self.products.count, inStock: 0, searched: "")
                         print("Fetching 21")
                         print("Skipping \(products.count)")
                     } else if segmentedControl.selectedSegmentIndex == 1 {
-                        fetchProducts(21, countOfCollection: self.products.count, inStock: 1)
+                        fetchProducts(21, countOfCollection: self.products.count, inStock: 1, searched: "")
                         print("Fetching 21 inStock products")
                         print("Skipping \(products.count)")
                     }
@@ -196,9 +209,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // MARK: - XXX
     
     
-    func fetchProducts(numberOfProducts: Int, countOfCollection: Int, inStock: Int) {
+    func fetchProducts(numberOfProducts: Int, countOfCollection: Int, inStock: Int, searched: String) {
         startActivityIndicator()
-        productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, inStock: inStock)
+        productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, inStock: inStock, search: searched)
     }
     
     func formatCellDimensions(){
@@ -208,6 +221,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     
     @IBAction func segmentedControlPressed(sender: AnyObject) {
+        searchBar.text = nil
         productCollectionView.reloadData()
     }
     
@@ -216,6 +230,17 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         activityIndicator.hidesWhenStopped = true
         activityIndicator.startAnimating()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: activityIndicator)
+    }
+    
+    func setGroceryCartButton() {
+        let groceryCartImage = UIImage(named: "Cart0")?.imageWithRenderingMode(.AlwaysOriginal)
+        let groceryCartButton: UIButton = UIButton(type: UIButtonType.Custom)
+        groceryCartButton.setImage((groceryCartImage), forState: UIControlState.Normal)
+        groceryCartButton.addTarget(self, action: "groceryCartButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
+        groceryCartButton.frame = CGRectMake(0, 0, 30, 30)
+        
+        let barButton = UIBarButtonItem(customView: groceryCartButton)
+        self.navigationItem.rightBarButtonItem = barButton
     }
     
     // MARK: - Search functionality
@@ -227,7 +252,13 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     }
     
     internal func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-//        self.searchBar.endEditing(true)
+        
+        searchTag = searchBar.text?.lowercaseString
+        print("The search tag is \(searchTag!)")
+        
+        print("Fetching searched products")
+        fetchProducts(0, countOfCollection: 0, inStock: 0, searched: searchTag!)
+        
         self.searchBar.showsCancelButton = false
         self.searchBar.resignFirstResponder()
     }

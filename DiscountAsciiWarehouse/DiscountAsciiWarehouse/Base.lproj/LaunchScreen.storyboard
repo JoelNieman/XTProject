@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -13,52 +14,54 @@
                         <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
                         <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                    <view key="view" contentMode="scaleAspectFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3XJ-Bj-W1V">
-                                <rect key="frame" x="-42" y="-21" width="42" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Discount Ascii Warehouse!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gsV-89-v8A">
-                                <rect key="frame" x="-42" y="-21" width="42" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchScreeniphone6-3" translatesAutoresizingMaskIntoConstraints="NO" id="rfk-HA-akv">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                            </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="gsV-89-v8A" firstAttribute="top" secondItem="3XJ-Bj-W1V" secondAttribute="bottom" constant="8" id="6KT-ka-Md4"/>
-                            <constraint firstItem="3XJ-Bj-W1V" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="DTr-48-BgI"/>
-                            <constraint firstItem="3XJ-Bj-W1V" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="daF-MA-8Ik"/>
-                            <constraint firstItem="gsV-89-v8A" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="wCo-LJ-ckK"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="rfk-HA-akv" secondAttribute="bottom" id="4aO-S3-Z6M"/>
+                            <constraint firstAttribute="trailing" secondItem="rfk-HA-akv" secondAttribute="trailing" id="PUO-oa-Twp"/>
+                            <constraint firstItem="rfk-HA-akv" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" id="VQB-II-eOF"/>
+                            <constraint firstItem="rfk-HA-akv" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Z2f-tJ-wL4"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="rfk-HA-akv" secondAttribute="trailing" id="eeS-nt-5hQ"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="rfk-HA-akv" secondAttribute="bottom" id="fGD-1X-RNU"/>
+                            <constraint firstItem="rfk-HA-akv" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" id="pSb-uf-7IC"/>
+                            <constraint firstItem="rfk-HA-akv" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" id="twH-KF-nbe">
+                                <variation key="heightClass=regular-widthClass=compact" constant="-20"/>
+                            </constraint>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
-                                <exclude reference="3XJ-Bj-W1V"/>
-                                <exclude reference="gsV-89-v8A"/>
+                                <exclude reference="rfk-HA-akv"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="DTr-48-BgI"/>
-                                <exclude reference="daF-MA-8Ik"/>
-                                <exclude reference="6KT-ka-Md4"/>
-                                <exclude reference="wCo-LJ-ckK"/>
+                                <exclude reference="PUO-oa-Twp"/>
+                                <exclude reference="VQB-II-eOF"/>
+                                <exclude reference="Z2f-tJ-wL4"/>
+                                <exclude reference="eeS-nt-5hQ"/>
+                                <exclude reference="pSb-uf-7IC"/>
+                                <exclude reference="twH-KF-nbe"/>
+                                <exclude reference="4aO-S3-Z6M"/>
+                                <exclude reference="fGD-1X-RNU"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="subviews">
-                                <include reference="3XJ-Bj-W1V"/>
-                                <include reference="gsV-89-v8A"/>
+                                <include reference="rfk-HA-akv"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="DTr-48-BgI"/>
-                                <include reference="daF-MA-8Ik"/>
-                                <include reference="6KT-ka-Md4"/>
-                                <include reference="wCo-LJ-ckK"/>
+                                <include reference="PUO-oa-Twp"/>
+                                <exclude reference="VQB-II-eOF"/>
+                                <include reference="Z2f-tJ-wL4"/>
+                                <exclude reference="eeS-nt-5hQ"/>
+                                <exclude reference="pSb-uf-7IC"/>
+                                <include reference="twH-KF-nbe"/>
+                                <include reference="4aO-S3-Z6M"/>
+                                <exclude reference="fGD-1X-RNU"/>
                             </mask>
                         </variation>
                     </view>
@@ -68,4 +71,7 @@
             <point key="canvasLocation" x="52.5" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="LaunchScreeniphone6-3" width="3125" height="5558"/>
+    </resources>
 </document>
