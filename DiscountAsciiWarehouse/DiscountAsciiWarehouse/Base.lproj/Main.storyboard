@@ -143,10 +143,13 @@
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WXQ-RQ-hRL">
                                         <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <state key="normal" title="close">
                                             <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="8" y="8" width="41" height="33"/>
+                                        </variation>
                                         <connections>
                                             <action selector="closeButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ybU-gm-zwV"/>
                                         </connections>
@@ -172,6 +175,19 @@
                                             <rect key="frame" x="187" y="37" width="65" height="21"/>
                                         </variation>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qr6-uL-lFv">
+                                        <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                        <state key="normal" title="Add to cart">
+                                            <color key="titleColor" red="0.50196081400000003" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="169" y="222" width="81" height="30"/>
+                                        </variation>
+                                        <connections>
+                                            <action selector="addToCartButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IhC-RW-fds"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.50196081400000003" green="0.25128865979381443" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
@@ -181,6 +197,7 @@
                                     <constraint firstItem="rtY-F4-BEH" firstAttribute="top" secondItem="YiU-AY-ZID" secondAttribute="top" constant="8" id="OZq-pC-Hsj"/>
                                     <constraint firstItem="u4N-v1-zkI" firstAttribute="centerY" secondItem="YiU-AY-ZID" secondAttribute="centerY" id="P4c-Pl-hEN"/>
                                     <constraint firstItem="WXQ-RQ-hRL" firstAttribute="leading" secondItem="YiU-AY-ZID" secondAttribute="leading" constant="8" id="RxH-A8-Eih"/>
+                                    <constraint firstAttribute="bottom" secondItem="qr6-uL-lFv" secondAttribute="bottom" constant="8" id="eKq-Y1-m6x"/>
                                     <constraint firstAttribute="height" constant="491" id="fFq-fu-0Jg">
                                         <variation key="heightClass=regular-widthClass=compact" constant="375"/>
                                     </constraint>
@@ -188,6 +205,7 @@
                                     <constraint firstItem="jsC-Dm-t8g" firstAttribute="top" secondItem="rtY-F4-BEH" secondAttribute="bottom" constant="8" id="jzs-7y-7Cw"/>
                                     <constraint firstAttribute="width" constant="300" id="uog-Z3-9yt"/>
                                     <constraint firstAttribute="trailing" secondItem="rtY-F4-BEH" secondAttribute="trailing" constant="8" id="zkG-Vp-LFY"/>
+                                    <constraint firstAttribute="trailing" secondItem="qr6-uL-lFv" secondAttribute="trailing" constant="10" id="zr6-k8-xwO"/>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="subviews">
@@ -195,6 +213,7 @@
                                         <exclude reference="u4N-v1-zkI"/>
                                         <exclude reference="rtY-F4-BEH"/>
                                         <exclude reference="jsC-Dm-t8g"/>
+                                        <exclude reference="qr6-uL-lFv"/>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="I4Y-bl-Gpz"/>
@@ -208,6 +227,8 @@
                                         <exclude reference="jzs-7y-7Cw"/>
                                         <exclude reference="OZq-pC-Hsj"/>
                                         <exclude reference="zkG-Vp-LFY"/>
+                                        <exclude reference="eKq-Y1-m6x"/>
+                                        <exclude reference="zr6-k8-xwO"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -216,6 +237,7 @@
                                         <include reference="u4N-v1-zkI"/>
                                         <include reference="rtY-F4-BEH"/>
                                         <include reference="jsC-Dm-t8g"/>
+                                        <include reference="qr6-uL-lFv"/>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="I4Y-bl-Gpz"/>
@@ -229,6 +251,8 @@
                                         <include reference="jzs-7y-7Cw"/>
                                         <include reference="OZq-pC-Hsj"/>
                                         <include reference="zkG-Vp-LFY"/>
+                                        <include reference="eKq-Y1-m6x"/>
+                                        <include reference="zr6-k8-xwO"/>
                                     </mask>
                                 </variation>
                             </view>

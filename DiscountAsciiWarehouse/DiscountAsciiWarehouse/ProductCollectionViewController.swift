@@ -25,6 +25,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var products = [Product]()
     private var inStockProducts = [Product]()
     private var searchedProducts = [Product]()
+    private var cart = [Product]()
     private var product = Product()
     private var loadedProducts:[Product]?
     private var productCount:Int!
@@ -110,7 +111,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     func onResponse(retrievedProducts: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?) {
         
-        
         if let mySearchedProducts = searchedProducts {
             if mySearchedProducts.count > 0{
                 self.searchedProducts = mySearchedProducts
@@ -151,6 +151,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         if self.products.count == numberOfCells {
             localStorage.setObject(date, forKey:"timeOfLastDownload")
         }
+        
+        segmentedControl.userInteractionEnabled = true
+        
         print("The product count is \(productCount)")
     }
     
@@ -267,6 +270,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     func fetchProducts(numberOfProducts: Int, countOfCollection: Int, inStock: Int, searched: String?) {
         startActivityIndicator()
+        segmentedControl.userInteractionEnabled = false
         productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, inStock: inStock, search: searched)
     }
     
@@ -370,5 +374,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
 
     @IBAction func closeButtonPressed(sender: AnyObject) {
         productPreview.hidden = true
+    }
+
+    @IBAction func addToCartButtonPressed(sender: AnyObject) {
+        self.cart.append(self.product)
+        productPreview.hidden = true
+        print("There is now \(self.cart.count) products in your cart")
     }
 }
