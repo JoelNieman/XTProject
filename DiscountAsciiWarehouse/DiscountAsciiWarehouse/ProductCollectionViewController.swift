@@ -90,7 +90,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         self.searchBar.delegate = self
         
-        setGroceryCartButton()
+        setGroceryCartButton(self.cart.count)
 
         print("ViewWillAppear: loaded \(self.products.count) products")
     }
@@ -303,8 +303,23 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: activityIndicator)
     }
     
-    func setGroceryCartButton() {
-        let groceryCartImage = UIImage(named: "Cart0")?.imageWithRenderingMode(.AlwaysOriginal)
+    func setGroceryCartButton(countOfProducts: Int) {
+        var cartImage = String()
+        switch self.cart.count {
+        case 0:
+            cartImage = "Cart0"
+        case 1:
+            cartImage = "Cart1"
+        case 2:
+            cartImage = "Cart2"
+        case 3:
+            cartImage = "Cart3"
+        default:
+            cartImage = "Cartplus"
+        }
+        
+        
+        let groceryCartImage = UIImage(named: cartImage)?.imageWithRenderingMode(.AlwaysOriginal)
         let groceryCartButton: UIButton = UIButton(type: UIButtonType.Custom)
         groceryCartButton.setImage((groceryCartImage), forState: UIControlState.Normal)
         groceryCartButton.addTarget(self, action: "groceryCartButtonPressed", forControlEvents: UIControlEvents.TouchUpInside)
@@ -312,6 +327,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         let barButton = UIBarButtonItem(customView: groceryCartButton)
         self.navigationItem.rightBarButtonItem = barButton
+        
     }
     
     func setMinimumTrigger() {
@@ -379,6 +395,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBAction func addToCartButtonPressed(sender: AnyObject) {
         self.cart.append(self.product)
         productPreview.hidden = true
+        setGroceryCartButton(self.cart.count)
         print("There is now \(self.cart.count) products in your cart")
     }
+    
 }
