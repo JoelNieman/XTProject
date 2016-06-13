@@ -368,11 +368,29 @@
                         <outlet property="quantityOutlet" destination="jsC-Dm-t8g" id="mbf-tY-92J"/>
                         <outlet property="searchBar" destination="ufn-EI-fxM" id="qke-W5-JRt"/>
                         <outlet property="segmentedControl" destination="xY2-MQ-Vq5" id="soo-nv-FIX"/>
+                        <segue destination="Geq-pZ-iwP" kind="show" identifier="segueToCart" id="3is-3u-1XO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1222.5" y="179.25"/>
+        </scene>
+        <!--Cart View Controller-->
+        <scene sceneID="ZSF-4u-U0m">
+            <objects>
+                <viewController id="Geq-pZ-iwP" customClass="CartViewController" customModule="DiscountAsciiWarehouse" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="GJr-oy-Cb6"/>
+                        <viewControllerLayoutGuide type="bottom" id="J2R-5A-4YO"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="KmW-17-MU1">
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kAn-Ta-DRg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1968" y="179.25"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="C6f-m3-pPC">

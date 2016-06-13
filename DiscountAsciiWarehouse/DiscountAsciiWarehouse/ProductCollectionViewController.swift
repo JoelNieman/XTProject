@@ -328,6 +328,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         let barButton = UIBarButtonItem(customView: groceryCartButton)
         self.navigationItem.rightBarButtonItem = barButton
         
+        
     }
     
     func setMinimumTrigger() {
@@ -386,6 +387,19 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         }
         
         return time
+    }
+    
+    func groceryCartButtonPressed() {
+        print("pressed the grocery cart button")
+        performSegueWithIdentifier("segueToCart", sender: nil)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "segueToCart" {
+            let destinationVC = segue.destinationViewController as! CartViewController
+
+            destinationVC.cartItems = cart
+        }
     }
 
     @IBAction func closeButtonPressed(sender: AnyObject) {
