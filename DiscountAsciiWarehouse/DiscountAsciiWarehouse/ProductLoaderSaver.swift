@@ -8,14 +8,17 @@
 
 import Foundation
 
+// This object is used to save retrieved products to the directory set up for them and also load them later if necessary.
+// This is part of the NSCoding protocol implementation.
+
 public class ProductLoaderSaver {
 
     
     
     // MARK: - NSCoding
     
-    func saveProducts(products: [Product], inStockProducts: [Product]) {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(products, toFile: Product.allProductURL.path!) && NSKeyedArchiver.archiveRootObject(inStockProducts, toFile: Product.inStockURL.path!)
+    func saveProducts(products: [Product]) {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(products, toFile: Product.allProductURL.path!)
         
         if !isSuccessfulSave {
             print("Failed to save products")
@@ -25,32 +28,47 @@ public class ProductLoaderSaver {
         
     }
     
-    func loadProducts() -> [[Product]]{
+    func saveCart(cart: [Product]) {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(cart, toFile: Product.cartURL.path!)
+        
+        if !isSuccessfulSave {
+            print("Failed to save cart")
+        } else {
+            print("Cart saved successfully")
+        }
+
+    }
+    
+    func loadProducts() -> [[Product]] {
         print("loadProducts called")
         
         var allProducts = [Product]()
-        var inStockProducts = [Product]()
+        
         
         if let savedAllProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.allProductURL.path!) as? [Product]){
-                let products = savedAllProducts
-                print("Loading \(products.count) saved all products!")
-                //  print("\(self.products[0].face)")
-                allProducts = products
+            let products = savedAllProducts
+            print("Loading \(products.count) saved all products!")
+            allProducts = products
         } else {
             allProducts = []
         }
         
-        if let savedInStockProducts = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.inStockURL.path!) as? [Product]){
-            let products = savedInStockProducts
-            print("Loading \(products.count) saved inStock products!")
-            //  print("\(self.products[0].face)")
-            inStockProducts = products
-        } else {
-            allProducts = []
-        }
-        
-        return[allProducts, inStockProducts]
+        return [allProducts]
     }
     
+    func loadCart() -> [[Product]] {
+        
+        var cartProducts = [Product]()
+        
+        if let savedCart = (NSKeyedUnarchiver.unarchiveObjectWithFile(Product.cartURL.path!) as? [Product]){
+            let cart = savedCart
+            print("Loading \(cart.count) saved cart products!")
+            cartProducts = cart
+        } else {
+            cartProducts = []
+        }
+        
+        return[cartProducts]
+    }
     
 }

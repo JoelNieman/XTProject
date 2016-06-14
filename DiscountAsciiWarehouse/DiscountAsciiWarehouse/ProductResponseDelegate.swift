@@ -8,6 +8,8 @@
 
 import Foundation
 
+// This is used to update the UI upon completion of parsing retrieved json
+
 protocol ProductResponseDelegate {
     func onResponse(products: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?)
 }
