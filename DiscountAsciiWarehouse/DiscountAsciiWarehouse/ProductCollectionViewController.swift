@@ -419,7 +419,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         } else {
             let timeOfLastDownload = localStorage.objectForKey("timeOfLastDownload") as! CFAbsoluteTime
             let timeInterval = CFTimeInterval(date - timeOfLastDownload)
-            let timeIntervalInMinutes = Int(timeInterval) / 60
+            let timeIntervalInMinutes = Int(timeInterval) / 3600
 
             print("it has been \(timeIntervalInMinutes) minutes since the last download")
             time = timeInterval
