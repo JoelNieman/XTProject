@@ -413,6 +413,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="(◕‿◕)" id="ssE-uV-gRr"/>
                     <connections>
+                        <outlet property="buyNowButton" destination="qr6-uL-lFv" id="gOb-mi-HqG"/>
                         <outlet property="collectionViewFlowLayout" destination="YGb-2Y-ij6" id="h1h-Fq-7ET"/>
                         <outlet property="priceOutlet" destination="rtY-F4-BEH" id="UeG-86-ubc"/>
                         <outlet property="productCollectionView" destination="caL-GE-Lap" id="o1w-Nf-BnA"/>

@@ -89,16 +89,20 @@ class CartViewController: UIViewController, UITableViewDelegate, UITableViewData
         cartTotalLabel.text = "$\(self.cartTotal).00"
     }
     @IBAction func buyNowButtonPressed(sender: AnyObject) {
-        let alertController = UIAlertController(title: "Thank You!", message:
-            "Your order hase been placed", preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) { (action) in
-            self.cartItems = []
-            self.handler.updateAndSaveCart(self.cartItems)
-            self.cartTableView.reloadData()
-            self.updateCartTotal(self.cartItems)
-        });
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        if self.cartItems.count > 0 {
+            let alertController = UIAlertController(title: "Thank You!", message:
+                "Your order hase been placed", preferredStyle: UIAlertControllerStyle.Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) { (action) in
+                self.cartItems = []
+                self.handler.updateAndSaveCart(self.cartItems)
+                self.cartTableView.reloadData()
+                self.updateCartTotal(self.cartItems)
+                });
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
+        }
+        
     }
     
 }

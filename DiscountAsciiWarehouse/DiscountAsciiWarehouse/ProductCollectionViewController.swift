@@ -21,6 +21,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBOutlet weak var productPreviewFace: UILabel!
     @IBOutlet weak var priceOutlet: UILabel!
     @IBOutlet weak var quantityOutlet: UILabel!
+    @IBOutlet weak var buyNowButton: UIButton!
 
     
     private var productDownloader: ProductDownloader?
@@ -221,8 +222,13 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
             quantityOutlet.text = "Out of stock"
         }
         
+        buyNowButton.hidden = false
+        
         if productForCell.lastItem != true {
             productPreview.hidden = false
+            if productForCell.stock == 0 {
+                buyNowButton.hidden = true
+            }
         } else {
             productPreview.hidden = true
         }
