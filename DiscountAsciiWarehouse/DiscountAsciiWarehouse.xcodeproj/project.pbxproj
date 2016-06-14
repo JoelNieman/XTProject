@@ -223,7 +223,6 @@
 				TargetAttributes = {
 					F9FCED401D0854E3003BCE81 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = FGQB5UTP7A;
 					};
 					F9FCED541D0854E3003BCE81 = {
 						CreatedOnToolsVersion = 7.3.1;
