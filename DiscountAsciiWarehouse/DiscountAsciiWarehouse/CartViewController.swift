@@ -14,6 +14,7 @@ class CartViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet weak var cartTableView: UITableView!
     @IBOutlet weak var cartTotalLabel: UILabel!
     @IBOutlet weak var totalPriceLabel: UILabel!
+    @IBOutlet weak var buyNowButton: UIButton!
     
     var cartItems = [Product]()
     var cartTotal = Int()
@@ -72,6 +73,7 @@ class CartViewController: UIViewController, UITableViewDelegate, UITableViewData
             
 
             self.handler.updateAndSaveCart(self.cartItems)
+            
 
         })
         return [removeAction]
@@ -86,4 +88,17 @@ class CartViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         cartTotalLabel.text = "$\(self.cartTotal).00"
     }
+    @IBAction func buyNowButtonPressed(sender: AnyObject) {
+        let alertController = UIAlertController(title: "Thank You!", message:
+            "Your order hase been placed", preferredStyle: UIAlertControllerStyle.Alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) { (action) in
+            self.cartItems = []
+            self.handler.updateAndSaveCart(self.cartItems)
+            self.cartTableView.reloadData()
+            self.updateCartTotal(self.cartItems)
+        });
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
 }

@@ -214,6 +214,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         productPreviewFace.text = productForCell.face
         productPreviewFace.adjustsFontSizeToFitWidth = true
         priceOutlet.text = "$\(Int(productForCell.price))"
+        
         if productForCell.stock > 0 {
             quantityOutlet.text = "Only \(productForCell.stock) left!"
         } else {
@@ -228,6 +229,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
     }
 
+    // This function sets the product appropriately based on the collection being viewed.
     
     func determineProductToUse(indexPath: Int) -> Product {
         var productForCell = Product()
@@ -256,6 +258,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         }
     }
     
+    // This function handles enabling the scroll to load more functionality
+    
     func enableScrollToLoad() {
     
         if scrollView.contentSize.height > minimumTrigger {
@@ -268,16 +272,25 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 }
             }
         }
+    
+    // This function sets the distance to the bottom of the screen that is used to trigger an action.
+    
+    func setMinimumTrigger() {
+        minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
+        productCollectionView.scrollEnabled = true
+    }
 
 
-    // MARK: - XXX
-
+    
+    // This is the api call function
 
     func fetchProducts(numberOfProducts: Int, countOfCollection: Int, searched: String?) {
         startActivityIndicator()
         segmentedControl.userInteractionEnabled = false
         productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, search: searched)
     }
+    
+    // These functions formats the cell size based on the iPhone screen size
     
     func formatCellDimensions(){
         let layout = productCollectionView.collectionViewLayout as! UICollectionViewFlowLayout
@@ -311,12 +324,17 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         productPreview.hidden = true
     }
     
+    
+    // This function puts the activitiy indicator in view and starts the animation.
+    
     func startActivityIndicator() {
         activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .White)
         activityIndicator.hidesWhenStopped = true
         activityIndicator.startAnimating()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: activityIndicator)
     }
+    
+    // This function manages the pictures used for the grocery cart.
     
     func setGroceryCartButton(countOfProducts: Int) {
         var cartImage = String()
@@ -346,14 +364,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
     }
     
-    func setMinimumTrigger() {
-        minimumTrigger = productCollectionView.bounds.size.height + scrollTriggerDistanceFromBottom
-        productCollectionView.scrollEnabled = true
-    }
-    
-    
-    
-    
     
     // MARK: - Search functionality
     
@@ -369,7 +379,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         searchTag = searchBar.text?.lowercaseString
         searchTagForURL = searchTag?.stringByReplacingOccurrencesOfString(" ", withString: "")
-//        print("The searchTagForUrl is \(searchTagForURL)")
         
         print("Fetching searched products")
         fetchProducts(0, countOfCollection: 0, searched: searchTagForURL)
@@ -386,6 +395,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     }
     
     // MARK: - Timer for product caching
+    
+    // This function takes a reading on the current time and stores it to the NSUserDefaults for reading later.
+    // If there aleady is a time stored, it will measure the time since the previous time was set.
     
     func readAndSetTime() -> Double {
         localStorage = NSUserDefaults.standardUserDefaults()
@@ -409,6 +421,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         return time
     }
+    
+    // This function determines if a new download is necessary based on the time passed since the last download
+    // If a new download is not necessary, it loads the previously retrieved products from the archive directory.
     
     func determineDownloadOrLoad() {
         if self.timeSinceLastDownload >= 60.0 {
@@ -445,6 +460,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         }
     }
     
+    // This function sends the CartViewController the current cart collection and sets the delegate for returning an updated cart
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueToCart" {
             cartViewController = segue.destinationViewController as! CartViewController
@@ -454,6 +471,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         }
     }
     
+    // This function iterates over the products recieved and puts all inStock products in the inStockProducts collection.
+    
     func addInStockProducts(allProducts: [Product]) {
         for product in allProducts{
             if product.stock > 0 {
@@ -461,19 +480,13 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
             }
         }
     }
-    
-    func updateAndSaveCart(cart: [Product]) {
-        self.cart = cart
-        setGroceryCartButton(cart.count)
-        productLoaderSaver.saveCart(self.cart)
-        print("There are now \(self.cart.count) products saved for later")
-    }
-
 
     @IBAction func closeButtonPressed(sender: AnyObject) {
         productPreview.hidden = true
     }
-
+    
+    // This adds an item to the cart.
+    
     @IBAction func addToCartButtonPressed(sender: AnyObject) {
         self.cart.append(self.product)
         productPreview.hidden = true
@@ -482,7 +495,17 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         productLoaderSaver.saveCart(self.cart)
     }
     
-
+    // this function is used to update the cart image and save the cart products when a product is added to the cart.
+    
+    func updateAndSaveCart(cart: [Product]) {
+        self.cart = cart
+        setGroceryCartButton(cart.count)
+        productLoaderSaver.saveCart(self.cart)
+        print("There are now \(self.cart.count) products saved for later")
+    }
+    
+    // This is the logic for the facebook button
+    
     @IBAction func facebookButtonPressed(sender: AnyObject) {
         
         //  Check if Facebook is available, otherwise display an error message

@@ -462,6 +462,9 @@
                                         <include reference="Dgd-yb-8Fu"/>
                                     </mask>
                                 </variation>
+                                <connections>
+                                    <action selector="buyNowButtonPressed:" destination="Geq-pZ-iwP" eventType="touchUpInside" id="8EG-G7-6BT"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EAa-Eq-EMm">
                                 <rect key="frame" x="-42" y="-21" width="42" height="21"/>
@@ -497,6 +500,9 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
+                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="193" y="28" width="39" height="40"/>
+                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <color key="tintColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -615,6 +621,7 @@
                         </variation>
                     </view>
                     <connections>
+                        <outlet property="buyNowButton" destination="XDP-sP-KJe" id="cCi-MV-qHJ"/>
                         <outlet property="cartTableView" destination="nVC-PK-QYW" id="mvg-tq-UYp"/>
                         <outlet property="cartTotalLabel" destination="EAa-Eq-EMm" id="j7f-4Z-dNm"/>
                         <outlet property="totalPriceLabel" destination="w0g-d1-8U4" id="fzD-m9-i0J"/>
