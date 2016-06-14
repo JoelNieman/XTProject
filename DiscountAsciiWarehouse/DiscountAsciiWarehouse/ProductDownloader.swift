@@ -14,15 +14,14 @@ class ProductDownloader {
     private var collectionOfAllProducts = [Product]()
     var dnJson = NSData()
     var httpResponse: NSHTTPURLResponse?
-    private let lastProduct = Product(type: "", id: "", size: 0, price: 0, face: ":(", stock: 0, tags: [], lastItem: true)
-    
     let handler: ProductResponseDelegate
+    
     init(handler: ProductResponseDelegate) {
         self.handler = handler
     }
 
     
-    func downloadProducts(limit: Int, skip: Int, inStock: Int, search: String?) {
+    func downloadProducts(limit: Int, skip: Int, search: String?) {
         
         var myArrayOfProducts:Array = [Product]()
         
@@ -30,18 +29,12 @@ class ProductDownloader {
         
         if search != nil {
             myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=200&skip=0&q=\(search!)")!
-//            print(myUrl)
             print("Making an api call for searched products")
         } else {
             myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)")!
             print("Making an api call for All products")
-//            print(myUrl)
         }
-//        else if inStock == 1{
-//            myUrl = NSURL(string: "http://74.50.59.155:5000/api/search?limit=\(limit)&skip=\(skip)&onlyInStock=true")!
-//            print("Making an api call for inStock products")
-//            print(myUrl)
-//        }
+
 
         let session = NSURLSession.sharedSession()
         let task = session.downloadTaskWithURL(myUrl, completionHandler: {
@@ -52,44 +45,38 @@ class ProductDownloader {
                 self.httpResponse = (response as! NSHTTPURLResponse)
                 switch self.httpResponse!.statusCode {
                 case 200:
-//                    print("Got 200")
-//                    print("The retrieved data is: \n\n \(location!)")
-                    
                     do {
+                        
+                        // myArray is the returned json objects, separated by new line and cast as a string, and then collected in an array.
                         let jsonString:NSString = try NSString(contentsOfURL: location!, encoding: NSUTF8StringEncoding)
                         let myArray:[NSString] = jsonString.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
                         
                         if jsonString == "" {
                             dispatch_async(dispatch_get_main_queue()) {
-                                    if search == nil || search == "" {
-                                        print("All products jsonString is empty")
-                                        var lastProductCollection = [Product]()
-                                        lastProductCollection.append(self.lastProduct!)
-                                        self.handler.onResponse(lastProductCollection, inStockProducts: lastProductCollection, searchedProducts: nil)
-                    
-                                    } else {
-                                        print("Search products jsonString is empty")
-                                        var lastProductCollection = [Product]()
-                                        lastProductCollection.append(self.lastProduct!)
-                                        self.handler.onResponse(nil, inStockProducts: nil, searchedProducts: lastProductCollection)
-                                    }
-                                }
-                        } else {
-                            switch inStock {
-                            case 0:
-                                if search != nil {
-                                    self.parseJSON(myArray, productSearch: true)
+                                
+                                // if the json returned from the api call is empty, this sends the default last product object to the view controller
+                                if search == nil || search == "" {
+                                    let lastProduct = Product(type: "", id: "", size: 0, price: 0, face: "The End", stock: 0, tags: [], lastItem: true)
+                                    
+                                    self.handler.onResponse([lastProduct!], inStockProducts: [lastProduct!], searchedProducts: nil)
+                                    print("All products jsonString is empty")
                                 } else {
-                                    self.parseJSON(myArray, productSearch: false)
+                                    let lastSearchedProduct = Product(type: "", id: "", size: 0, price: 0, face: "We don't sell those", stock: 0, tags: [], lastItem: true)
+                                    self.handler.onResponse(nil, inStockProducts: nil, searchedProducts: [lastSearchedProduct!])
+                                    print("Search products jsonString is empty")
                                 }
-                            
-                            default:
-                                print("error handing json array to json parser")
                             }
+                    
+                        } else {
+                            if search != nil {
+                                self.parseJSON(myArray, productSearch: true)
+                            } else {
+                                self.parseJSON(myArray, productSearch: false)
                         }
-                    } catch {
-                        print("error converting url to NSString")
                     }
+                } catch {
+                    print("error converting url to NSString")
+                }
                     
                 default:
                     print("Request failed: \(self.httpResponse!.statusCode)")
@@ -101,9 +88,11 @@ class ProductDownloader {
         
     }
     
+    // function used to parse the retrieved json objects if the api call does not return an empty object.
+    
     func parseJSON(array: NSArray, productSearch: Bool) {
         
-        var products:Array = [Product]()
+        var products = [Product]()
         var inStockProducts = [Product]()
         var searchedProducts = [Product]()
         
@@ -153,9 +142,6 @@ class ProductDownloader {
                     
                         product.lastItem = false
                     
-                    
-                    
-                    
                     switch productSearch {
                     case false:
                         products.append(product)
@@ -171,10 +157,12 @@ class ProductDownloader {
 //                    print("Error serializing JSON")
                 }
 
-            }else {
+            } else {
                 print("Error encoding JSON")
             }
         }
+        
+        // gives the handler the retrieved and serialized products on the main thread.
         
         dispatch_async(dispatch_get_main_queue()) {
             self.handler.onResponse(products, inStockProducts: inStockProducts, searchedProducts: searchedProducts)

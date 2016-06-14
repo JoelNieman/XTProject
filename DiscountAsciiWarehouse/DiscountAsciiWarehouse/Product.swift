@@ -8,6 +8,9 @@
 
 import Foundation
 
+
+
+
 // MARK: - Types
 
 struct PropertyKey {
@@ -23,6 +26,9 @@ struct PropertyKey {
 }
 
 // MARK: - Product Class
+
+// this is my custom "Product" object.
+// Product subclasses NSObject and implements NSCoding to enable saving and loading of previously retrieved products.
 
 class Product: NSObject, NSCoding {
     var type: String!
@@ -93,7 +99,8 @@ class Product: NSObject, NSCoding {
         self.init(type: type!, id: id!, size: size!, price: price!, face: face!, stock: stock!, tags: tags!, lastItem: lastItem!)
     }
     
+    // these are the files where the All Products and Products in Cart are saved and loaded from. 
     static let documentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     static var allProductURL = documentsDirectory.URLByAppendingPathComponent("Products")
-    static var inStockURL = documentsDirectory.URLByAppendingPathComponent("inStock")
+    static var cartURL = documentsDirectory.URLByAppendingPathComponent("Cart")
 }

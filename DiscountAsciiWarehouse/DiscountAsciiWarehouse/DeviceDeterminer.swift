@@ -8,6 +8,9 @@
 
 import UIKit
 
+// this is probably a long way to determine the iPhone device being used.
+// this object is used to set the cell dimensions in the collection view so that the view is optimized by device.
+
 public class DeviceDeterminer {
     
     func determineNumberOfCells(screenHeight: CGFloat) -> Int {
@@ -24,12 +27,10 @@ public class DeviceDeterminer {
             print("this is an iPhone 5 screen size")
             returnValue = 15
         } else if (screenHeight > 450) {
-            print("this is an iPhone 4 screen size")
-            returnValue = 9
-        } else {
-            print("This is an iPhone 3 or earlier")
-            returnValue = 8
+            print("this is an iPhone 4 screen size or smalled")
+            returnValue = 12
         }
+        
         return returnValue
     }
 }

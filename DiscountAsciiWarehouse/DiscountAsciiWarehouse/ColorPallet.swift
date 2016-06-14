@@ -8,5 +8,5 @@
 
 import UIKit
 
-
+// Just the purple color used throughout the app
 let textColor = UIColor.init(red:128/255, green: 0/255, blue: 255/255, alpha: 1)

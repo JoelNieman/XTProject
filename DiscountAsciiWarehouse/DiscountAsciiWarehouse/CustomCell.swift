@@ -8,9 +8,13 @@
 
 import UIKit
 
+// This is my custom cell object.
+// bounds is used to ensure the faces are placed exactly in the middle of the cell.
+
 class CustomCell: UICollectionViewCell {
     
     @IBOutlet weak var face: UILabel!
+    @IBOutlet weak var quantity: UILabel!
     
     override var bounds: CGRect {
         didSet {
