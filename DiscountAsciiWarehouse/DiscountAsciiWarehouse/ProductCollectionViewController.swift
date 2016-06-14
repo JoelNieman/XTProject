@@ -419,7 +419,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         } else {
             let timeOfLastDownload = localStorage.objectForKey("timeOfLastDownload") as! CFAbsoluteTime
             let timeInterval = CFTimeInterval(date - timeOfLastDownload)
-            let timeIntervalInMinutes = Int(timeInterval) / 3600
+            let timeIntervalInMinutes = Int(timeInterval) / 60
 
             print("it has been \(timeIntervalInMinutes) minutes since the last download")
             time = timeInterval
@@ -432,7 +432,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // If a new download is not necessary, it loads the previously retrieved products from the archive directory.
     
     func determineDownloadOrLoad() {
-        if self.timeSinceLastDownload >= 60.0 {
+        if self.timeSinceLastDownload >= 3600.0 {
             self.products = []
             print("It about time for some new products!")
             
