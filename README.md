@@ -4,7 +4,7 @@ This project is the Discount Ascii Warehouse iOS application being created as pa
 
 Installation
 
-The app can pulled from Github and simulated in Xcode on iPhone devices running >= iOS 8.0 in portrait more. I built the app without the use of 3rd Party Libraries so there aren't any additional dependencies to worry about.
+The app can pulled from Github and simulated in Xcode on iPhone devices running >= iOS 8.0 in portrait mode. I built the app without the use of 3rd Party Libraries so there aren't any additional dependencies to worry about.
 
 
 License
