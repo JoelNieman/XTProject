@@ -8,25 +8,26 @@
 
 import Foundation
 
+let lastProduct = Product(type: "", id: "", size: 0, price: 0, face: "The End", stock: 0, tags: [], lastItem: true)
+let lastSearchedProduct = Product(type: "", id: "", size: 0, price: 0, face: "We don't sell those", stock: 0, tags: [], lastItem: true)
+
 class ProductDownloader {
     
     
     private var collectionOfAllProducts = [Product]()
     var dnJson = NSData()
     var httpResponse: NSHTTPURLResponse?
-    let lastProduct = Product(type: "", id: "", size: 0, price: 0, face: "The End", stock: 0, tags: [], lastItem: true)
-    let lastSearchedProduct = Product(type: "", id: "", size: 0, price: 0, face: "We don't sell those", stock: 0, tags: [], lastItem: true)
+    var sort: Bool!
     
     let handler: ProductResponseDelegate
-    
     init(handler: ProductResponseDelegate) {
         self.handler = handler
     }
 
     
-    func downloadProducts(limit: Int, skip: Int, search: String?) {
-        
+    func downloadProducts(limit: Int, skip: Int, search: String?, sort: Bool) {
         self.handler.apiCallsEnabled(false)
+        self.sort = sort
         
         var myArrayOfProducts:Array = [Product]()
         
@@ -64,10 +65,10 @@ class ProductDownloader {
                                 
                                 // if the json returned from the api call is empty, this sends the default last product object to the view controller
                                 if search == nil || search == "" {
-                                    self.handler.onResponse([self.lastProduct!], inStockProducts: [self.lastProduct!], searchedProducts: nil)
+                                    self.handler.onResponse([lastProduct!], inStockProducts: [lastProduct!], searchedProducts: nil, sort: false)
                                     print("All products jsonString is empty")
                                 } else {
-                                    self.handler.onResponse(nil, inStockProducts: nil, searchedProducts: [self.lastSearchedProduct!])
+                                    self.handler.onResponse(nil, inStockProducts: nil, searchedProducts: [lastSearchedProduct!], sort: false)
                                     print("Search products jsonString is empty")
                                 }
                             }
@@ -173,7 +174,11 @@ class ProductDownloader {
         // gives the handler the retrieved and serialized products on the main thread.
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.handler.onResponse(products, inStockProducts: inStockProducts, searchedProducts: searchedProducts)
+            if self.sort == false {
+                self.handler.onResponse(products, inStockProducts: inStockProducts, searchedProducts: searchedProducts, sort: false)
+            } else {
+                self.handler.onResponse(products, inStockProducts: inStockProducts, searchedProducts: searchedProducts, sort: true)
+            }
             self.handler.apiCallsEnabled(true)
         }
     }
