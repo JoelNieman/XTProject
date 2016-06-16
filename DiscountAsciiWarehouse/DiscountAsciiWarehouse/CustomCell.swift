@@ -16,6 +16,7 @@ class CustomCell: UICollectionViewCell {
     @IBOutlet weak var face: UILabel!
     @IBOutlet weak var quantity: UILabel!
     @IBOutlet weak var size: UILabel!
+    @IBOutlet weak var price: UILabel!
     
     override var bounds: CGRect {
         didSet {

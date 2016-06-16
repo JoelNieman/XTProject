@@ -11,7 +11,7 @@ import Foundation
 // This is used to update the UI upon completion of parsing retrieved json
 
 protocol ProductResponseDelegate {
-    func onResponse(products: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?)
+    func onResponse(products: [Product]?, inStockProducts: [Product]?, searchedProducts: [Product]?, sort: Bool)
     func apiCallsEnabled(enabled: Bool) -> Bool
     func serverError()
 }
