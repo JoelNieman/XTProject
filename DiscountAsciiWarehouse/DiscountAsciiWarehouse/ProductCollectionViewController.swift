@@ -23,10 +23,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     @IBOutlet weak var quantityOutlet: UILabel!
     @IBOutlet weak var buyNowButton: UIButton!
     @IBOutlet weak var sortButton: UIButton!
-    @IBOutlet weak var sortedByLabel: UILabel!
     @IBOutlet weak var priceButton: UIButton!
     @IBOutlet weak var sizeButton: UIButton!
     @IBOutlet weak var quantityButton: UIButton!
+    @IBOutlet weak var sortedByButton: UILabel!
+    
     
     private var productDownloader: ProductDownloader?
     private var products: [Product] = []
@@ -62,6 +63,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var productSizer = ProductSizer()
     private var sortLabelText: String!
     private var sortedBy: String!
+    private var sortMode = "Descending"
     
     private var activityIndicator: UIActivityIndicatorView!
     private var cartViewController: CartViewController!
@@ -112,19 +114,19 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
             alert.show()
         
         } else {
-            if segmentedControl.selectedSegmentIndex == 2 {
-                productDownloader?.downloadProducts(100, skip: 0, search: searched, sort: false)
-            } else if products.last?.lastItem != true {
-                
-                    apiCalls = apiCallsEnabled(false)
-                    productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, search: searched, sort: sort)
-                    if activityIndicator != nil {
-                        activityIndicator.startAnimating()
-                    }
-                    print("Skipping \(countOfCollection)")
+            if segmentedControl.selectedSegmentIndex != 2 && products.last?.lastItem != true {
+                apiCalls = apiCallsEnabled(false)
+                productDownloader?.downloadProducts(numberOfProducts, skip: countOfCollection, search: searched, sort: sort)
+                if activityIndicator != nil {
+                    activityIndicator.startAnimating()
                 }
+            } else if segmentedControl.selectedSegmentIndex == 2{
+                productDownloader?.downloadProducts(200, skip: 0, search: searched, sort: false)
+                }
+                print("Skipping \(countOfCollection)")
             }
         }
+    
 
     
     
@@ -142,10 +144,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         if sort == true {
             handleSorting(self.sortedBy)
-            self.apiCalls = apiCallsEnabled(true)
-            self.products.append(lastProduct!)
-            self.inStockProducts.append(lastProduct!)
         }
+        
+        self.apiCalls = apiCallsEnabled(true)
     
         reloadAndResetCollectionView()
         activityIndicator.stopAnimating()
@@ -176,7 +177,13 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) { (action) in
             });
         
+        if self.products.last?.lastItem != true {
+            self.products.append(lastProduct!)
+            self.inStockProducts.append(lastProduct!)
+        }
+        
         self.presentViewController(alertController, animated: true, completion: nil)
+        self.activityIndicator.stopAnimating()
     }
     
     
@@ -610,11 +617,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     func manageSortViews() {
         switch segmentedControl.selectedSegmentIndex {
         case 2:
-            sortedByLabel.hidden = true
+            sortedByButton.hidden = true
             sortButton.hidden = true
             searchBar.hidden = false
         default:
-            sortedByLabel.hidden = false
+            sortedByButton.hidden = false
             sortButton.hidden = false
             searchBar.hidden = true
         }
@@ -688,10 +695,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     @IBAction func priceButtonPressed(sender: AnyObject) {
         toggleSortButtons()
-        sortLabelText = "  Price"
-        sortedByLabel.text = "Sorted by price"
-        sortButton.titleLabel?.text = sortLabelText
+        self.sortLabelText = "  Price"
+        self.sortButton.titleLabel?.text = sortLabelText
         self.sortedBy = "price"
+        self.sortedByButton.text = self.sortMode
 
         if products.last?.lastItem == true {
             sortPrice()
@@ -699,30 +706,31 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         } else {
             fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
         }
+        self.sortedByButton.userInteractionEnabled = true
     }
     
     @IBAction func sizeButtonPressed(sender: AnyObject) {
         toggleSortButtons()
-        sortLabelText = "  Size"
-        sortButton.titleLabel?.text = sortLabelText
-        sortedByLabel.text = "Sorted by size"
+        self.sortLabelText = "  Size"
+        self.sortButton.titleLabel?.text = sortLabelText
         self.sortedBy = "size"
+        self.sortedByButton.text = self.sortMode
         
         if products.last?.lastItem == true {
             sortSize()
             productCollectionView.reloadData()
         } else {
             fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
-            products.append(lastProduct!)
         }
+        self.sortedByButton.userInteractionEnabled = true
     }
     
     @IBAction func quantityButtonPressed(sender: AnyObject) {
         toggleSortButtons()
-        sortLabelText = "Quantity"
-        sortButton.titleLabel?.text = sortLabelText
-        sortedByLabel.text = "Sorted by quantity"
+        self.sortLabelText = "Quantity"
+        self.sortButton.titleLabel?.text = sortLabelText
         self.sortedBy = "quantity"
+        self.sortedByButton.text = self.sortMode
         
         if products.last?.lastItem == true {
             sortQuantity()
@@ -730,32 +738,81 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         } else {
             fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
         }
+        self.sortedByButton.userInteractionEnabled = true
     }
     
     func sortPrice() {
-        self.products = self.products.sort {(element1, element2) -> Bool in
-            return element1.price > element2.price
-        }
-        self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
-            return element1.price > element2.price
+        switch sortMode {
+        case "Descending":
+            self.products = self.products.sort {(element1, element2) -> Bool in
+                return element1.price > element2.price
+            }
+            self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
+                return element1.price > element2.price
+            }
+        default:
+            self.products.removeLast()
+            self.inStockProducts.removeLast()
+            
+            self.products = self.products.sort {(element1, element2) -> Bool in
+                return element1.price < element2.price
+            }
+            self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
+                return element1.price < element2.price
+            }
+            
+            self.products.append(lastProduct!)
+            self.inStockProducts.append(lastProduct!)
         }
     }
     
     func sortSize() {
-        self.products = self.products.sort {(element1, element2) -> Bool in
-            return element1.size > element2.size
-        }
-        self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
-            return element1.size > element2.size
+        switch sortMode {
+        case "Descending":
+            self.products = self.products.sort {(element1, element2) -> Bool in
+                return element1.size > element2.size
+            }
+            self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
+                return element1.size > element2.size
+            }
+        default:
+            self.products.removeLast()
+            self.inStockProducts.removeLast()
+            
+            self.products = self.products.sort {(element1, element2) -> Bool in
+                return element1.size < element2.size
+            }
+            self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
+                return element1.size < element2.size
+            }
+            
+            self.products.append(lastProduct!)
+            self.inStockProducts.append(lastProduct!)
         }
     }
     
     func sortQuantity() {
-        self.products = self.products.sort {(element1, element2) -> Bool in
-            return element1.stock > element2.stock
-        }
-        self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
-            return element1.stock > element2.stock
+        switch sortMode {
+        case "Descending":
+            self.products = self.products.sort {(element1, element2) -> Bool in
+                return element1.stock > element2.stock
+            }
+            self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
+                return element1.stock > element2.stock
+            }
+        default:
+            self.products.removeLast()
+            self.inStockProducts.removeLast()
+            
+            self.products = self.products.sort {(element1, element2) -> Bool in
+                return element1.stock < element2.stock
+            }
+            self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
+                return element1.stock < element2.stock
+            }
+            
+            self.products.append(lastProduct!)
+            self.inStockProducts.append(lastProduct!)
         }
     }
     
@@ -771,6 +828,30 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
             print("Error sorting")
         }
         productCollectionView.reloadData()
+    }
+    
+    
+    @IBAction func sortedByButtonPressed(sender: AnyObject) {
+        if self.sortMode == "Descending" {
+            self.sortMode = "Ascending"
+        } else {
+            self.sortMode = "Descending"
+        }
+        
+        manageSortMode()
+        self.sortedByButton.text = self.sortMode
+        productCollectionView.reloadData()
+    }
+    
+    func manageSortMode() {
+        switch sortedBy {
+        case "price":
+            sortPrice()
+        case "size":
+            sortSize()
+        default:
+            sortQuantity()
+        }
     }
 }
 

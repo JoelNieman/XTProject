@@ -177,6 +177,8 @@ class ProductDownloader {
             if self.sort == false {
                 self.handler.onResponse(products, inStockProducts: inStockProducts, searchedProducts: searchedProducts, sort: false)
             } else {
+                products.append(lastProduct!)
+                inStockProducts.append(lastProduct!)
                 self.handler.onResponse(products, inStockProducts: inStockProducts, searchedProducts: searchedProducts, sort: true)
             }
             self.handler.apiCallsEnabled(true)
