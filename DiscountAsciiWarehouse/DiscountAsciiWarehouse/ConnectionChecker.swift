@@ -6,30 +6,45 @@
 //  Copyright © 2016 JoelNieman. All rights reserved.
 //
 
-//import Foundation
+import Foundation
 import SystemConfiguration
-
+//
 public class ConnectionChecker {
     
-    func isConnectedToNetwork() -> Bool {
+    let handler: ConnectionCheckerDelegate
+    init(handler: ConnectionCheckerDelegate) {
+        self.handler = handler
+    }
+
+    func checkConnection() {
+        var myUrl = NSURL(string: "https://www.google.com")
+    
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithURL(myUrl!, completionHandler: {
+            location, response, error in
+            if let taskError = error {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.handler.connectionTest(false)
+                }
+                print("Task Error Domain is: \(taskError.domain)\n\nThe Error Code is: \(taskError.code)")
+            } else {
+                let httpResponse = (response as! NSHTTPURLResponse)
+                switch httpResponse.statusCode {
+                case 200:
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.handler.connectionTest(true)
+                    }
+                default:
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.handler.connectionTest(false)
+                    }
+                    print("Request failed: \(httpResponse.statusCode)")
+                }
+            }
+        })
+    
+        task.resume()
         
-        var zeroAddress = sockaddr_in(sin_len: 0, sin_family: 0, sin_port: 0, sin_addr: in_addr(s_addr: 0), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
-        zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
-        zeroAddress.sin_family = sa_family_t(AF_INET)
-        
-        let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
-            SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, UnsafePointer($0))
-        }
-        
-        var flags: SCNetworkReachabilityFlags = SCNetworkReachabilityFlags(rawValue: 0)
-        if SCNetworkReachabilityGetFlags(defaultRouteReachability!, &flags) == false {
-            return false
-        }
-        
-        let isReachable = flags == .Reachable
-        let needsConnection = flags == .ConnectionRequired
-        
-        return isReachable && !needsConnection
         
     }
 }

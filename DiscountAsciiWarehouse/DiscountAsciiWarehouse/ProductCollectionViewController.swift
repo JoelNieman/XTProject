@@ -11,7 +11,7 @@ import Social
 
 // This is where all the magic happens!
 
-class ProductCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, ProductResponseDelegate, CartDelegate {
+class ProductCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, ProductResponseDelegate, CartDelegate, ConnectionCheckerDelegate {
     
     @IBOutlet weak var collectionViewFlowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var productCollectionView: UICollectionView!
@@ -64,6 +64,9 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     private var sortLabelText: String!
     private var sortedBy: String!
     private var sortMode = "Descending"
+    private var connection = true
+    private var connectionAlertShown = false
+    private var initialLoad = true
     
     private var activityIndicator: UIActivityIndicatorView!
     private var cartViewController: CartViewController!
@@ -76,6 +79,8 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.initialLoad == true
+        
         self.searchBar.delegate = self
         setGroceryCartButton(self.cart.count)
         
@@ -83,8 +88,6 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         
         productDownloader = ProductDownloader(handler: self)
         
-        timeSinceLastDownload = readAndSetTime()
-        determineDownloadOrLoad()
         setActivityIndicator()
         
         if products.count > numberOfCells {
@@ -97,6 +100,7 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(false)
         productCollectionView.scrollEnabled = true
+        ConnectionChecker(handler: self).checkConnection()
     }
     
     
@@ -106,10 +110,31 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     
     
     
+    func connectionTest(connection: Bool) {
+        self.connection = connection
+    
+        // In the case that the connection test failed and the user has not yet been informed they are without connection, alert them.
+        if connection == false && connectionAlertShown == false {
+            var alert = UIAlertView(title: "No connection", message: "You do not currently have network connection", delegate: nil, cancelButtonTitle: "Dismiss")
+            alert.show()
+            connectionAlertShown = true
+        }
+        
+        
+        // If this is the initial load (i.e., ViewDidLoad) and the connection test is successful, this function will retrieve the time of the last download and then determine if a new download is necessary.
+        if self.initialLoad == true  && connection == true {
+            timeSinceLastDownload = readAndSetTime()
+            determineDownloadOrLoad()
+            self.initialLoad == false
+        } else  {
+            timeSinceLastDownload = 0
+        }
+    }
+    
     // This is the api call function
     
     func fetchProducts(numberOfProducts: Int, countOfCollection: Int, searched: String?, sort: Bool) {
-        if ConnectionChecker().isConnectedToNetwork() == false {
+        if self.connection == false {
             var alert = UIAlertView(title: "No connection", message: "You are not currently connected to the internet", delegate: nil, cancelButtonTitle: "Dismiss")
             alert.show()
         
@@ -172,18 +197,16 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // this function creates and displays an error dialog to the user if the server is unavailable. 
     
     func serverError() {
-        let alertController = UIAlertController(title: "Server Error", message:
-            "Unfortunately we are having problems with the server", preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) { (action) in
-            });
-        
-        if self.products.last?.lastItem != true {
-            self.products.append(lastProduct!)
-            self.inStockProducts.append(lastProduct!)
+        if connection == true {
+            let alertController = UIAlertController(title: "Error", message:
+                "Unfortunately we are having connection problems", preferredStyle: UIAlertControllerStyle.Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) { (action) in
+                });
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
+            self.activityIndicator.stopAnimating()
         }
         
-        self.presentViewController(alertController, animated: true, completion: nil)
-        self.activityIndicator.stopAnimating()
     }
     
     
@@ -355,10 +378,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     // This function handles enabling the scroll to load more functionality
     
     func enableScrollToLoad() {
-        if ConnectionChecker().isConnectedToNetwork() == true {
+        if self.connection == true {
             if scrollView.contentSize.height > minimumTrigger {
                 let distanceFromBottom = scrollView.contentSize.height - (scrollView.bounds.size.height - scrollView.contentInset.bottom) - scrollView.contentOffset.y
-                if distanceFromBottom < self.scrollTriggerDistanceFromBottom && apiCalls == true && ConnectionChecker().isConnectedToNetwork() == true{
+                if distanceFromBottom < self.scrollTriggerDistanceFromBottom && apiCalls == true && self.connection == true{
                     reloadAndResetCollectionView()
                     setActivityIndicator(self.products.count)
                     fetchProducts(30, countOfCollection: self.products.count, searched: nil, sort: false)
@@ -464,19 +487,22 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
     }
     
     internal func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        self.searchedProducts = []
-        
-        
-        searchTag = searchBar.text?.lowercaseString
-        searchTagForURL = searchTag?.stringByReplacingOccurrencesOfString(" ", withString: "")
-        
-        print("Fetching searched products")
-        fetchProducts(200, countOfCollection: 0, searched: searchTagForURL, sort: false)
-        
-        self.searchBar.showsCancelButton = false
+        if self.connection == true {
+            self.searchedProducts = []
+            
+            
+            searchTag = searchBar.text?.lowercaseString
+            searchTagForURL = searchTag?.stringByReplacingOccurrencesOfString(" ", withString: "")
+            
+            print("Fetching searched products")
+            fetchProducts(200, countOfCollection: 0, searched: searchTagForURL, sort: false)
+            
+            self.searchBar.showsCancelButton = false
+            self.searchBar.resignFirstResponder()
+            
+            self.productCollectionView.reloadData()
+        }
         self.searchBar.resignFirstResponder()
-        
-        self.productCollectionView.reloadData()
     }
     
     internal func searchBarCancelButtonClicked(searchBar: UISearchBar) {
@@ -536,8 +562,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
             
             let savedCart = productLoaderSaver.loadCart()
             self.cart = savedCart[0]
-            fetchProducts(numberOfCells, countOfCollection: products.count, searched: nil, sort: false)
-
+            
+            if self.connection == true {
+                fetchProducts(numberOfCells, countOfCollection: products.count, searched: nil, sort: false)
+            }
             
         } else {
             let savedProducts = productLoaderSaver.loadProducts()
@@ -553,8 +581,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
             }
             
             if self.products == [] {
-                fetchProducts(numberOfCells, countOfCollection: products.count, searched: nil, sort: false)
-                print("No saved products. Fetching some for you")
+                if self.connection == true {
+                    fetchProducts(numberOfCells, countOfCollection: products.count, searched: nil, sort: false)
+                    print("No saved products. Fetching some for you")
+                }
             }
             self.productCollectionView.scrollEnabled = false
             reloadAndResetCollectionView()
@@ -703,8 +733,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         if products.last?.lastItem == true {
             sortPrice()
             productCollectionView.reloadData()
+        } else if self.connection == true {
+                fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
         } else {
-            fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
+            sortPrice()
         }
         self.sortedByButton.userInteractionEnabled = true
     }
@@ -719,8 +751,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         if products.last?.lastItem == true {
             sortSize()
             productCollectionView.reloadData()
+        } else if self.connection == true {
+                fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
         } else {
-            fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
+            sortSize()
         }
         self.sortedByButton.userInteractionEnabled = true
     }
@@ -735,13 +769,17 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
         if products.last?.lastItem == true {
             sortQuantity()
             productCollectionView.reloadData()
-        } else {
+        } else if self.connection == true {
             fetchProducts(100, countOfCollection: self.products.count, searched: nil, sort: true)
+        } else {
+            sortQuantity()
         }
         self.sortedByButton.userInteractionEnabled = true
     }
     
     func sortPrice() {
+        var lastItemIncluded = false
+        
         switch sortMode {
         case "Descending":
             self.products = self.products.sort {(element1, element2) -> Bool in
@@ -751,8 +789,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 return element1.price > element2.price
             }
         default:
-            self.products.removeLast()
-            self.inStockProducts.removeLast()
+            if self.products.last?.lastItem == true {
+                lastItemIncluded = true
+                self.products.removeLast()
+                self.inStockProducts.removeLast()
+            }
             
             self.products = self.products.sort {(element1, element2) -> Bool in
                 return element1.price < element2.price
@@ -760,13 +801,16 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
             self.inStockProducts = self.inStockProducts.sort {(element1, element2) -> Bool in
                 return element1.price < element2.price
             }
-            
-            self.products.append(lastProduct!)
-            self.inStockProducts.append(lastProduct!)
+            if lastItemIncluded == true {
+                self.products.append(lastProduct!)
+                self.inStockProducts.append(lastProduct!)
+            }
         }
     }
     
     func sortSize() {
+        var lastItemIncluded = false
+        
         switch sortMode {
         case "Descending":
             self.products = self.products.sort {(element1, element2) -> Bool in
@@ -776,8 +820,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 return element1.size > element2.size
             }
         default:
-            self.products.removeLast()
-            self.inStockProducts.removeLast()
+            if self.products.last?.lastItem == true {
+                lastItemIncluded = true
+                self.products.removeLast()
+                self.inStockProducts.removeLast()
+            }
             
             self.products = self.products.sort {(element1, element2) -> Bool in
                 return element1.size < element2.size
@@ -786,12 +833,16 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 return element1.size < element2.size
             }
             
-            self.products.append(lastProduct!)
-            self.inStockProducts.append(lastProduct!)
+            if lastItemIncluded == true {
+                self.products.append(lastProduct!)
+                self.inStockProducts.append(lastProduct!)
+            }
         }
     }
     
     func sortQuantity() {
+        var lastItemIncluded = false
+        
         switch sortMode {
         case "Descending":
             self.products = self.products.sort {(element1, element2) -> Bool in
@@ -801,8 +852,11 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 return element1.stock > element2.stock
             }
         default:
-            self.products.removeLast()
-            self.inStockProducts.removeLast()
+            if self.products.last?.lastItem == true {
+                lastItemIncluded = true
+                self.products.removeLast()
+                self.inStockProducts.removeLast()
+            }
             
             self.products = self.products.sort {(element1, element2) -> Bool in
                 return element1.stock < element2.stock
@@ -811,8 +865,10 @@ class ProductCollectionViewController: UIViewController, UICollectionViewDataSou
                 return element1.stock < element2.stock
             }
             
-            self.products.append(lastProduct!)
-            self.inStockProducts.append(lastProduct!)
+            if lastItemIncluded == true {
+                self.products.append(lastProduct!)
+                self.inStockProducts.append(lastProduct!)
+            }
         }
     }
     

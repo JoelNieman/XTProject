@@ -11,6 +11,7 @@
 		5D180ECC1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D180ECB1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift */; };
 		5DCBE13F1D0E402300CF6034 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCBE13E1D0E402300CF6034 /* CartViewController.swift */; };
 		5DCBE1411D0E4B3100CF6034 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCBE1401D0E4B3100CF6034 /* CustomTableViewCell.swift */; };
+		5DCBE1431D15965E00CF6034 /* ConnectionCheckerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCBE1421D15965E00CF6034 /* ConnectionCheckerDelegate.swift */; };
 		F92478C31D09DFEE00C137D8 /* ProductCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92478C21D09DFEE00C137D8 /* ProductCollectionViewController.swift */; };
 		F92478C91D09E74300C137D8 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92478C81D09E74300C137D8 /* CustomCell.swift */; };
 		F9A68F0B1D0B29D700ACC3E7 /* ColorPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A68F0A1D0B29D700ACC3E7 /* ColorPallet.swift */; };
@@ -50,6 +51,7 @@
 		5D180ECB1D0CC6DB00F0A9E8 /* ProductLoaderSaver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductLoaderSaver.swift; sourceTree = "<group>"; };
 		5DCBE13E1D0E402300CF6034 /* CartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		5DCBE1401D0E4B3100CF6034 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
+		5DCBE1421D15965E00CF6034 /* ConnectionCheckerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionCheckerDelegate.swift; sourceTree = "<group>"; };
 		F92478C21D09DFEE00C137D8 /* ProductCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductCollectionViewController.swift; sourceTree = "<group>"; };
 		F92478C81D09E74300C137D8 /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		F9A68F0A1D0B29D700ACC3E7 /* ColorPallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPallet.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				5D180EC91D0A4DB600F0A9E8 /* DeviceDeterminer.swift */,
 				F9E79D121D11953C001B7F53 /* ProductSizer.swift */,
 				F9E79D141D11CFC3001B7F53 /* ConnectionChecker.swift */,
+				5DCBE1421D15965E00CF6034 /* ConnectionCheckerDelegate.swift */,
 			);
 			name = API;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 				F92478C91D09E74300C137D8 /* CustomCell.swift in Sources */,
 				F9E79D0F1D0F231C001B7F53 /* CartDelegate.swift in Sources */,
 				F9FCED731D0855D0003BCE81 /* ProductDownloader.swift in Sources */,
+				5DCBE1431D15965E00CF6034 /* ConnectionCheckerDelegate.swift in Sources */,
 				F9E79D131D11953C001B7F53 /* ProductSizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
